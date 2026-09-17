@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lorenzovillarroel90.github.io/LogicAtelierWebsite/sitemap.xml

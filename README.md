@@ -1,7 +1,7 @@
 # Puzzle worlds website
 
 Static marketing and privacy pages for Evenbeam, Knotide, Pipebloom, Rayfold,
-Laneweave, and Shaplet.
+Laneweave, Shaplet, Driftlings, Overprint, Rollmark, and Sproutbound.
 
 ## Deployment
 
@@ -45,17 +45,17 @@ build step.
 
 - Keep product names, subtitles, descriptions, and screenshot headlines in
   sync with `../AppStoreMetaData/<Brand>/v1.0/`.
-- Every language has a hub, six app pages, and six matching privacy pages.
+- Every language has a hub, ten app pages, and ten matching privacy pages.
   Keep canonical URLs, reciprocal `hreflang`, sitemap entries, image locale,
   and internal links in step when adding or changing a route.
 - Do not add App Store links until an app is actually published. Use the
   localized coming-soon label for unreleased apps.
-- Future App Store IDs and canonical URLs are kept in `APP_STORE_IDS` and the
-  `store_url` field in `build.py`. Each app also has one `store_live` switch,
-  currently `False`; after its listing is live, change only that field to
-  `True`, add/verify the localized live CTA label if needed, and rebuild. The
-  generator then exposes the canonical URL in the CTA and JSON-LD. Never
-  enable it for an unpublished listing.
+- Verified numeric App Store IDs are kept in `APP_STORE_IDS`; the generator
+  derives `store_url` only when an ID exists. Apps without a verified ID must
+  keep both ID and URL absent. Every app currently has `store_live: False`.
+  After a listing is live, enable that app only after its ID and URL are
+  verified. The generator emits the CTA and JSON-LD `downloadUrl` only when
+  both the live switch and verified URL are present.
 - Privacy wording must remain conservative and factual: local progress and
   settings, Google Mobile Ads for free-user rewarded hints and selected
   completion interstitials, StoreKit entitlement state, and no payment-card

@@ -19,10 +19,12 @@ editing it.
 - Never invent App Store availability, prices, ratings, reviews, awards,
   release dates, or support addresses. Apps currently use localized
   “Coming soon on the App Store” text without a link.
-- `build.py` stores the verified future App Store ID/URL for each app and a
-  per-app `store_live` field, currently `False`. Flip that one field only after
-  the listing is live; the generator will then render the CTA and download URL.
-  Keep all other apps non-clickable until their own listings are live.
+- `APP_STORE_IDS` contains only verified numeric IDs; `build.py` derives a
+  `store_url` only when an ID exists. Apps without a verified ID must keep the
+  ID and URL absent. Every app currently has `store_live: False`. After a
+  listing is live, enable it only once its ID and URL are verified. The
+  generator must render a CTA and JSON-LD `downloadUrl` only when both the
+  live switch and verified URL are present.
 - Keep the app privacy wording aligned with the evidence in the iOS project:
   local progress/settings, no account, Google Mobile Ads for rewarded hints
   and selected completion interstitials for free users, StoreKit entitlement

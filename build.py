@@ -26,6 +26,10 @@ LANGS = ["en", "es", "fr", "it", "de"]
 NON_EN = ["es", "fr", "it", "de"]
 BRANDS = ["Evenbeam", "Knotide", "Pipebloom", "Rayfold", "Laneweave", "Shaplet", "Driftlings", "Overprint", "Rollmark", "Sproutbound"]
 SLUGS = [b.lower() for b in BRANDS]
+POCKET_BRANDS = ["Reedwake"]
+POCKET_SLUGS = [brand.lower() for brand in POCKET_BRANDS]
+PUZZLE_SCREENSHOT_FILES = ("01_core", "02_depth", "03_solved", "04_home")
+POCKET_SCREENSHOT_FILES = ("01_core", "02_world", "03_world", "04_depth", "05_solved", "06_home")
 APP_STORE_IDS = {
     "pipebloom": "6812988605",
     "knotide": "6812988563",
@@ -33,6 +37,7 @@ APP_STORE_IDS = {
     "rayfold": "6812989257",
     "laneweave": "6812991110",
     "evenbeam": "6812989398",
+    "reedwake": "6819999218",
 }
 STORE_LABELS = {
     "en": "Open on the App Store",
@@ -135,6 +140,131 @@ COMMON = {
     },
 }
 
+# PocketColor pages use their own product and privacy language while sharing
+# the existing layout, route, accessibility, and SEO helpers above.
+POCKET_TEXT = {
+    "en": {
+        "support_nav": "Help & support", "journey_label": "The journey", "journey_title": "Cross the river on two depth layers",
+        "screens_intro": "The six views follow the river journey in order: core mechanic, two new regions, a deeper puzzle, a solved crossing, then the home atlas.",
+        "regions": "Regions", "story_routes": "Story crossings", "trials": "Tide Trials", "depths": "Depth layers",
+        "free_title": "Begin with a complete opening region", "full_title": "Continue Nim’s journey",
+        "one_time": "One-time purchase · No ads · No subscription", "price": "Spain base price €3.99; other storefront prices are set by Apple.",
+        "free_replay": "The first six story crossings in Wakewater Gardens are free to play.",
+        "faq_label": "Help & support", "faq_title": "Questions about Reedwake?", "support_intro": "Find practical answers about controls, saved progress, the free opening and your full-game purchase.",
+        "controls_q": "How do I move Nim?", "save_q": "Where is my progress saved?", "content_q": "What is included for free?", "purchase_q": "What does the full-game purchase unlock?", "restore_q": "How do I restore a purchase?", "pending_q": "My purchase is pending or the store is unavailable. What should I do?",
+        "controls_a": "The in-game guide explains movement, depth changes and crossing hazards. Use the movement control to move one tile at a time; the A action changes depth when the route allows it.",
+        "save_a": "Crossing progress, badges and settings are saved locally on this device. Reedwake does not require an account. Deleting the app removes locally stored data, subject to normal operating-system backups.",
+        "pending_a": "A pending purchase is waiting for authorization or completion; keep playing the free chapter and check again later. If the store cannot load, check your connection and retry. A verified purchase or restore unlocks the full game while preserving your progress.",
+        "restore_a_prefix": "Open the in-game full-game purchase sheet and choose",
+        "privacy_title": "Privacy for {name}", "privacy_intro": "Reedwake stores game progress and settings locally. It does not use accounts, ads, analytics or subscription services. This page describes the app and this website.",
+        "privacy_updated": "Last updated: October 7, 2026", "privacy_device": "Progress and settings", "privacy_device_copy": "Stored locally on your device",
+        "privacy_account": "Account", "privacy_account_copy": "No account required", "privacy_services": "Third-party services", "privacy_services_copy": "Apple StoreKit handles the one-time purchase",
+        "website_heading": "This website", "website_body": "This static website has no accounts, forms, cookies, analytics, advertising, or third-party tracking scripts. GitHub Pages may receive ordinary request logs under GitHub’s own policies. The website does not use those logs to identify you or build a profile.",
+        "app_heading": "What the app stores", "app_body": "Reedwake stores game progress, badges and settings locally on your device. No account is required, and game progress is not sent to a Reedwake server. Deleting the app removes its local data, subject to normal operating-system backups.",
+        "purchase_heading": "One-time purchase", "purchase_body": "Apple and StoreKit process the optional non-consumable full-game purchase. The app receives the verified entitlement state; it does not receive or store payment-card details. The purchase unlocks the remaining seven regions, 42 story crossings, all eight Tide Trials, and the complete story and ending. The Spain base price is €3.99; other storefront prices are set by Apple.",
+        "services_heading": "Ads, accounts and analytics", "services_body": "Reedwake contains no advertising, account system, subscription, or analytics service. The app uses StoreKit for the optional one-time full-game purchase.",
+        "deletion_heading": "Progress and deletion", "deletion_body": "Game progress and settings stay on this device. Deleting Reedwake removes its locally stored data, subject to normal operating-system backups. If you unlock the full game, the entitlement can be restored through the in-game purchase sheet.",
+        "privacy_contact": "For help, visit the Reedwake support section.", "privacy_back": "Reedwake help & support", "discover_title": "A story journey beyond the puzzle worlds", "discover_copy": "Discover Reedwake: a river-crossing adventure about finding a path through rain, traffic and two changing depths.",
+        "footer": "A river-crossing adventure with a free opening region and a one-time full-game unlock.",
+    },
+    "es": {
+        "support_nav": "Ayuda y soporte", "journey_label": "El viaje", "journey_title": "Cruza el río en dos capas de profundidad",
+        "screens_intro": "Las seis vistas muestran el viaje por el río en orden: mecánica principal, dos regiones nuevas, un puzle más profundo, un cruce resuelto y el atlas.",
+        "regions": "Regiones", "story_routes": "Cruces de historia", "trials": "Pruebas de marea", "depths": "Capas de profundidad",
+        "free_title": "Empieza con una región inicial completa", "full_title": "Continúa el viaje de Nim",
+        "one_time": "Pago único · Sin anuncios · Sin suscripción", "price": "Precio base en España: 3,99 €; Apple establece los precios en otros escaparates.",
+        "free_replay": "Los seis primeros cruces de historia de Jardines de Agua Viva se pueden jugar gratis.",
+        "faq_label": "Ayuda y soporte", "faq_title": "¿Tienes dudas sobre Reedwake?", "support_intro": "Encuentra respuestas prácticas sobre los controles, el progreso guardado, el capítulo gratuito y la compra del juego completo.",
+        "controls_q": "¿Cómo muevo a Nim?", "save_q": "¿Dónde se guarda mi progreso?", "content_q": "¿Qué puedo jugar gratis?", "purchase_q": "¿Qué desbloquea la compra del juego completo?", "restore_q": "¿Cómo restauro una compra?", "pending_q": "La compra está pendiente o la tienda no está disponible. ¿Qué hago?",
+        "controls_a": "La guía del juego explica el movimiento, los cambios de profundidad y los peligros de los cruces. Usa el control de movimiento para avanzar casilla a casilla; la acción A cambia de capa cuando la ruta lo permite.",
+        "save_a": "El progreso de los cruces, las insignias y los ajustes se guardan localmente en este dispositivo. Reedwake no requiere una cuenta. Al borrar la app se eliminan los datos locales, sujeto a las copias de seguridad normales del sistema operativo.",
+        "pending_a": "Una compra pendiente espera autorización o que se complete; puedes seguir jugando el capítulo gratuito y volver a comprobarlo más tarde. Si la tienda no carga, revisa la conexión e inténtalo de nuevo. Una compra o restauración verificada desbloquea el juego completo y conserva tu progreso.",
+        "restore_a_prefix": "Abre la pantalla de compra del juego completo y selecciona",
+        "privacy_title": "Privacidad de {name}", "privacy_intro": "Reedwake guarda el progreso y los ajustes localmente. No usa cuentas, anuncios, analítica ni suscripciones. Esta página describe la app y este sitio web.",
+        "privacy_updated": "Última actualización: 7 de octubre de 2026", "privacy_device": "Progreso y ajustes", "privacy_device_copy": "Se guardan localmente en tu dispositivo",
+        "privacy_account": "Cuenta", "privacy_account_copy": "No necesitas una cuenta", "privacy_services": "Servicios externos", "privacy_services_copy": "Apple StoreKit gestiona la compra única",
+        "website_heading": "Este sitio web", "website_body": "Este sitio web estático no tiene cuentas, formularios, cookies, analítica, publicidad ni scripts de seguimiento de terceros. GitHub Pages puede recibir registros ordinarios de solicitudes según sus propias políticas. El sitio no usa esos registros para identificarte ni crear un perfil.",
+        "app_heading": "Qué guarda la app", "app_body": "Reedwake guarda el progreso, las insignias y los ajustes localmente en tu dispositivo. No necesitas una cuenta y el progreso no se envía a un servidor de Reedwake. Al borrar la app se eliminan los datos locales, sujeto a las copias de seguridad normales del sistema operativo.",
+        "purchase_heading": "Compra única", "purchase_body": "Apple y StoreKit procesan la compra opcional no consumible del juego completo. La app recibe el estado verificado de la autorización, pero no recibe ni guarda los datos de la tarjeta. La compra desbloquea las otras siete regiones, 42 cruces de historia, las ocho pruebas de marea y la historia completa con su final. El precio base en España es 3,99 €; Apple establece los precios en otros escaparates.",
+        "services_heading": "Anuncios, cuentas y analítica", "services_body": "Reedwake no incluye publicidad, sistema de cuentas, suscripciones ni servicios de analítica. La compra opcional única del juego completo se gestiona con StoreKit.",
+        "deletion_heading": "Progreso y eliminación", "deletion_body": "El progreso y los ajustes se quedan en este dispositivo. Al borrar Reedwake se eliminan sus datos locales, sujeto a las copias de seguridad normales del sistema operativo. Si desbloqueas el juego completo, puedes restaurar la autorización desde la pantalla de compra.",
+        "privacy_contact": "Para recibir ayuda, visita la sección de soporte de Reedwake.", "privacy_back": "Ayuda y soporte de Reedwake", "discover_title": "Una aventura narrativa más allá de los mundos de puzle", "discover_copy": "Descubre Reedwake: una aventura de cruces fluviales para encontrar el camino entre la lluvia, el tráfico y dos profundidades cambiantes.",
+        "footer": "Una aventura fluvial con una región inicial gratuita y un desbloqueo único del juego completo.",
+    },
+    "fr": {
+        "support_nav": "Aide et assistance", "journey_label": "Le voyage", "journey_title": "Traversez la rivière sur deux profondeurs",
+        "screens_intro": "Les six vues suivent le voyage dans l’ordre : mécanique centrale, deux nouvelles régions, puzzle plus approfondi, traversée réussie, puis atlas.",
+        "regions": "Régions", "story_routes": "Traversées narratives", "trials": "Épreuves de marée", "depths": "Niveaux de profondeur",
+        "free_title": "Commencez par une région d’ouverture complète", "full_title": "Poursuivez le voyage de Nim",
+        "one_time": "Achat unique · Sans publicité · Sans abonnement", "price": "Prix de base en Espagne : 3,99 € ; Apple fixe les prix des autres boutiques.",
+        "free_replay": "Les six premières traversées narratives des Jardins des Eaux vives sont gratuites.",
+        "faq_label": "Aide et assistance", "faq_title": "Des questions sur Reedwake ?", "support_intro": "Trouvez des réponses pratiques sur les commandes, la progression sauvegardée, le début gratuit et l’achat du jeu complet.",
+        "controls_q": "Comment déplacer Nim ?", "save_q": "Où ma progression est-elle sauvegardée ?", "content_q": "Que peut-on jouer gratuitement ?", "purchase_q": "Que débloque l’achat du jeu complet ?", "restore_q": "Comment restaurer un achat ?", "pending_q": "Mon achat est en attente ou la boutique est indisponible. Que faire ?",
+        "controls_a": "Le guide intégré explique les déplacements, les changements de profondeur et les dangers. Utilisez la commande de déplacement pour avancer case par case ; l’action A change de couche lorsque le parcours le permet.",
+        "save_a": "La progression, les badges et les réglages sont enregistrés localement sur cet appareil. Reedwake ne nécessite aucun compte. La suppression de l’app retire les données locales, sous réserve des sauvegardes habituelles du système d’exploitation.",
+        "pending_a": "Un achat en attente nécessite encore une autorisation ou doit être finalisé ; vous pouvez continuer le chapitre gratuit et réessayer plus tard. Si la boutique ne se charge pas, vérifiez votre connexion puis réessayez. Un achat ou une restauration vérifiés débloquent le jeu complet tout en conservant votre progression.",
+        "restore_a_prefix": "Ouvrez la fenêtre d’achat du jeu complet et choisissez",
+        "privacy_title": "Confidentialité de {name}", "privacy_intro": "Reedwake conserve localement la progression et les réglages. Le jeu n’utilise ni compte, ni publicité, ni analyse, ni abonnement. Cette page décrit l’app et ce site web.",
+        "privacy_updated": "Dernière mise à jour : 7 octobre 2026", "privacy_device": "Progression et réglages", "privacy_device_copy": "Enregistrés localement sur votre appareil",
+        "privacy_account": "Compte", "privacy_account_copy": "Aucun compte nécessaire", "privacy_services": "Services tiers", "privacy_services_copy": "Apple StoreKit traite l’achat unique",
+        "website_heading": "Ce site web", "website_body": "Ce site web statique n’utilise ni compte, ni formulaire, ni cookie, ni outil d’analyse, ni publicité, ni script de suivi tiers. GitHub Pages peut recevoir les journaux ordinaires de requêtes selon ses propres règles. Le site n’utilise pas ces journaux pour vous identifier ou créer un profil.",
+        "app_heading": "Ce que l’app conserve", "app_body": "Reedwake enregistre localement sur votre appareil la progression, les badges et les réglages. Aucun compte n’est nécessaire et la progression n’est pas envoyée à un serveur Reedwake. La suppression de l’app retire les données locales, sous réserve des sauvegardes habituelles du système d’exploitation.",
+        "purchase_heading": "Achat unique", "purchase_body": "Apple et StoreKit traitent l’achat facultatif non consommable du jeu complet. L’app reçoit l’état vérifié du droit d’accès ; elle ne reçoit ni ne conserve les données de votre carte bancaire. L’achat débloque les sept autres régions, 42 traversées narratives, les huit épreuves de marée et l’histoire complète jusqu’à sa fin. Le prix de base en Espagne est de 3,99 € ; Apple fixe les prix des autres boutiques.",
+        "services_heading": "Publicité, comptes et analyse", "services_body": "Reedwake ne contient ni publicité, ni système de compte, ni abonnement, ni service d’analyse. StoreKit traite l’achat facultatif du jeu complet.",
+        "deletion_heading": "Progression et suppression", "deletion_body": "La progression et les réglages restent sur cet appareil. La suppression de Reedwake retire ses données locales, sous réserve des sauvegardes habituelles du système d’exploitation. Si vous débloquez le jeu complet, vous pouvez restaurer votre achat depuis la fenêtre d’achat.",
+        "privacy_contact": "Pour obtenir de l’aide, consultez la section d’assistance Reedwake.", "privacy_back": "Aide et assistance Reedwake", "discover_title": "Une aventure narrative au-delà des univers de puzzles", "discover_copy": "Découvrez Reedwake : une aventure de traversée où l’on cherche son chemin sous la pluie, entre circulation et deux profondeurs changeantes.",
+        "footer": "Une aventure fluviale avec une région d’ouverture gratuite et un déblocage unique du jeu complet.",
+    },
+    "it": {
+        "support_nav": "Aiuto e assistenza", "journey_label": "Il viaggio", "journey_title": "Attraversa il fiume su due livelli di profondità",
+        "screens_intro": "Le sei schermate mostrano il viaggio sul fiume in ordine: meccanica principale, due nuove regioni, un puzzle più profondo, un attraversamento risolto e la schermata dell’atlante.",
+        "regions": "Regioni", "story_routes": "Attraversamenti narrativi", "trials": "Prove di marea", "depths": "Livelli di profondità",
+        "free_title": "Inizia con una regione introduttiva completa", "full_title": "Continua il viaggio di Nim",
+        "one_time": "Acquisto una tantum · Senza annunci · Senza abbonamento", "price": "Prezzo base in Spagna: 3,99 €; Apple stabilisce i prezzi degli altri store.",
+        "free_replay": "I primi sei attraversamenti narrativi dei Giardini di Acquafiorita sono gratuiti.",
+        "faq_label": "Aiuto e assistenza", "faq_title": "Hai domande su Reedwake?", "support_intro": "Trova risposte pratiche su comandi, progressi salvati, capitolo gratuito e acquisto del gioco completo.",
+        "controls_q": "Come muovo Nim?", "save_q": "Dove vengono salvati i progressi?", "content_q": "Cosa si può giocare gratis?", "purchase_q": "Cosa sblocca l’acquisto del gioco completo?", "restore_q": "Come ripristino un acquisto?", "pending_q": "L’acquisto è in attesa o lo store non è disponibile. Cosa posso fare?",
+        "controls_a": "La guida del gioco spiega movimento, cambi di profondità e pericoli degli attraversamenti. Usa il comando di movimento per spostarti di una casella alla volta; l’azione A cambia livello quando il percorso lo consente.",
+        "save_a": "Progressi negli attraversamenti, distintivi e impostazioni vengono salvati localmente su questo dispositivo. Reedwake non richiede un account. Eliminando l’app rimuovi i dati locali, salvo i normali backup del sistema operativo.",
+        "pending_a": "Un acquisto in attesa deve ancora essere autorizzato o completato; puoi continuare il capitolo gratuito e riprovare più tardi. Se lo store non si carica, controlla la connessione e riprova. Un acquisto o ripristino verificato sblocca il gioco completo mantenendo i progressi.",
+        "restore_a_prefix": "Apri la schermata d’acquisto del gioco completo e scegli",
+        "privacy_title": "Privacy di {name}", "privacy_intro": "Reedwake salva progressi e impostazioni localmente. Non usa account, annunci, analisi o abbonamenti. Questa pagina descrive l’app e il sito web.",
+        "privacy_updated": "Ultimo aggiornamento: 7 ottobre 2026", "privacy_device": "Progressi e impostazioni", "privacy_device_copy": "Salvati localmente sul dispositivo",
+        "privacy_account": "Account", "privacy_account_copy": "Non serve un account", "privacy_services": "Servizi di terze parti", "privacy_services_copy": "Apple StoreKit gestisce l’acquisto una tantum",
+        "website_heading": "Questo sito web", "website_body": "Questo sito web statico non usa account, moduli, cookie, analisi, pubblicità o script di tracciamento di terze parti. GitHub Pages può ricevere i normali log delle richieste secondo le proprie politiche. Il sito non usa questi log per identificarti o creare un profilo.",
+        "app_heading": "Cosa salva l’app", "app_body": "Reedwake salva localmente sul dispositivo progressi, distintivi e impostazioni. Non serve un account e i progressi non vengono inviati a un server Reedwake. Eliminando l’app rimuovi i dati locali, salvo i normali backup del sistema operativo.",
+        "purchase_heading": "Acquisto una tantum", "purchase_body": "Apple e StoreKit elaborano l’acquisto opzionale non consumabile del gioco completo. L’app riceve lo stato verificato dell’autorizzazione, ma non riceve né conserva i dati della carta. L’acquisto sblocca le altre sette regioni, 42 attraversamenti narrativi, tutte le otto prove di marea e la storia completa con finale. Il prezzo base in Spagna è 3,99 €; Apple stabilisce i prezzi degli altri store.",
+        "services_heading": "Annunci, account e analisi", "services_body": "Reedwake non include pubblicità, account, abbonamenti o servizi di analisi. StoreKit gestisce l’acquisto opzionale una tantum del gioco completo.",
+        "deletion_heading": "Progressi e cancellazione", "deletion_body": "Progressi e impostazioni restano su questo dispositivo. Eliminando Reedwake rimuovi i suoi dati locali, salvo i normali backup del sistema operativo. Se sblocchi il gioco completo, puoi ripristinare l’acquisto dalla schermata di acquisto.",
+        "privacy_contact": "Per ricevere aiuto, visita la sezione assistenza di Reedwake.", "privacy_back": "Aiuto e assistenza Reedwake", "discover_title": "Un’avventura narrativa oltre i mondi di puzzle", "discover_copy": "Scopri Reedwake: un’avventura di attraversamenti fluviali per trovare la strada tra pioggia, traffico e due profondità mutevoli.",
+        "footer": "Un’avventura fluviale con una regione introduttiva gratuita e uno sblocco una tantum del gioco completo.",
+    },
+    "de": {
+        "support_nav": "Hilfe & Support", "journey_label": "Die Reise", "journey_title": "Überquere den Fluss auf zwei Tiefenebenen",
+        "screens_intro": "Die sechs Ansichten zeigen die Flussreise der Reihe nach: Kernmechanik, zwei neue Regionen, ein tieferes Rätsel, eine gelöste Passage und anschließend der Atlas.",
+        "regions": "Regionen", "story_routes": "Storyüberquerungen", "trials": "Gezeitenprüfungen", "depths": "Tiefenebenen",
+        "free_title": "Beginne mit einer vollständigen Startregion", "full_title": "Setze Nims Reise fort",
+        "one_time": "Einmalkauf · Keine Werbung · Kein Abo", "price": "Basispreis in Spanien: 3,99 €; Apple legt die Preise anderer Stores fest.",
+        "free_replay": "Die ersten sechs Storyüberquerungen in den Gärten des Wacherwassers sind kostenlos spielbar.",
+        "faq_label": "Hilfe & Support", "faq_title": "Fragen zu Reedwake?", "support_intro": "Hier findest du praktische Antworten zu Steuerung, Spielstand, kostenlosem Einstieg und dem Kauf der Vollversion.",
+        "controls_q": "Wie bewege ich Nim?", "save_q": "Wo wird mein Fortschritt gespeichert?", "content_q": "Was kann ich kostenlos spielen?", "purchase_q": "Was schaltet der Vollversionskauf frei?", "restore_q": "Wie stelle ich einen Kauf wieder her?", "pending_q": "Mein Kauf ist ausstehend oder der Store nicht verfügbar. Was kann ich tun?",
+        "controls_a": "Der Spieleführer erklärt Bewegung, Tiefenwechsel und Gefahren beim Überqueren. Bewege dich mit der Steuerung jeweils ein Feld; die A-Aktion wechselt die Ebene, wenn der Weg es erlaubt.",
+        "save_a": "Fortschritt, Abzeichen und Einstellungen werden lokal auf diesem Gerät gespeichert. Reedwake benötigt kein Konto. Beim Löschen der App werden lokale Daten entfernt, vorbehaltlich normaler Betriebssystem-Backups.",
+        "pending_a": "Ein ausstehender Kauf wartet noch auf eine Genehmigung oder seinen Abschluss. Spiele bis dahin das kostenlose Kapitel weiter und prüfe es später erneut. Wenn der Store nicht lädt, überprüfe deine Verbindung und versuche es erneut. Ein verifizierter Kauf oder eine Wiederherstellung schaltet das ganze Spiel frei und erhält deinen Fortschritt.",
+        "restore_a_prefix": "Öffne den Kaufdialog für die Vollversion und wähle",
+        "privacy_title": "Datenschutz für {name}", "privacy_intro": "Reedwake speichert Fortschritt und Einstellungen lokal. Das Spiel nutzt keine Konten, Werbung, Analyse oder Abonnements. Diese Seite beschreibt die App und diese Website.",
+        "privacy_updated": "Zuletzt aktualisiert: 7. Oktober 2026", "privacy_device": "Fortschritt und Einstellungen", "privacy_device_copy": "Lokal auf deinem Gerät gespeichert",
+        "privacy_account": "Konto", "privacy_account_copy": "Kein Konto erforderlich", "privacy_services": "Drittanbieter", "privacy_services_copy": "Apple StoreKit verarbeitet den Einmalkauf",
+        "website_heading": "Diese Website", "website_body": "Diese statische Website nutzt keine Konten, Formulare, Cookies, Analyse, Werbung oder Tracking-Skripte von Drittanbietern. GitHub Pages kann gemäß den eigenen Richtlinien normale Anfrageprotokolle erhalten. Die Website verwendet diese Protokolle nicht, um dich zu identifizieren oder ein Profil zu erstellen.",
+        "app_heading": "Was die App speichert", "app_body": "Reedwake speichert Fortschritt, Abzeichen und Einstellungen lokal auf deinem Gerät. Ein Konto ist nicht erforderlich und der Spielfortschritt wird nicht an einen Reedwake-Server gesendet. Wenn du die App löschst, werden lokale Daten entfernt, vorbehaltlich normaler Betriebssystem-Backups.",
+        "purchase_heading": "Einmalkauf", "purchase_body": "Apple und StoreKit verarbeiten den optionalen, nicht verbrauchbaren Kauf der Vollversion. Die App erhält den verifizierten Berechtigungsstatus, aber keine Zahlungskartendaten. Der Kauf schaltet die sieben weiteren Regionen, 42 Storyüberquerungen, alle acht Gezeitenprüfungen und die vollständige Geschichte samt Ende frei. Der Basispreis in Spanien beträgt 3,99 €; Apple legt die Preise anderer Stores fest.",
+        "services_heading": "Werbung, Konten und Analyse", "services_body": "Reedwake enthält keine Werbung, kein Kontosystem, kein Abonnement und keinen Analysedienst. StoreKit verarbeitet den optionalen Einmalkauf der Vollversion.",
+        "deletion_heading": "Fortschritt und Löschen", "deletion_body": "Fortschritt und Einstellungen bleiben auf diesem Gerät. Wenn du Reedwake löschst, werden lokale Daten entfernt, vorbehaltlich normaler Betriebssystem-Backups. Wenn du die Vollversion freischaltest, kannst du den Kauf im Kaufdialog wiederherstellen.",
+        "privacy_contact": "Hilfe findest du im Support-Bereich von Reedwake.", "privacy_back": "Hilfe & Support für Reedwake", "discover_title": "Eine erzählerische Reise jenseits der Puzzlewelten", "discover_copy": "Entdecke Reedwake: ein Flussabenteuer, in dem du zwischen Regen, Verkehr und zwei wechselnden Tiefen deinen Weg findest.",
+        "footer": "Ein Flussabenteuer mit kostenloser Startregion und einmaliger Freischaltung des ganzen Spiels.",
+    },
+}
+
 
 def esc(value: str) -> str:
     return html.escape(value, quote=True)
@@ -151,11 +281,13 @@ def load_apps() -> dict[str, dict]:
         store_id = APP_STORE_IDS.get(slug)
         apps[slug] = {
             "brand": brand,
+            "family": "puzzle",
             "name": {lang: read_text(source / "app-name" / f"{lang}.txt") for lang in LANGS},
             "subtitle": {lang: read_text(source / "subtitle" / f"{lang}.txt") for lang in LANGS},
             "promo": {lang: read_text(source / "promotional-text" / f"{lang}.txt") for lang in LANGS},
             "description": {lang: read_text(source / "app-description" / f"{lang}.txt") for lang in LANGS},
             "headlines": {lang: json.loads(read_text(source / "screenshot-headlines" / f"{lang}.json"))["screenshots"] for lang in LANGS},
+            "screenshot_files": PUZZLE_SCREENSHOT_FILES,
             "theme": THEMES[slug],
             # The store CTA also requires a verified numeric ID and derived URL.
             "store_live": False,
@@ -163,6 +295,42 @@ def load_apps() -> dict[str, dict]:
             "store_url": f"https://apps.apple.com/app/id{store_id}" if store_id else None,
         }
     return apps
+
+
+def load_pocket_games(source_root: Path = ROOT) -> dict[str, dict]:
+    """Load optional PocketColor products from the same approved metadata matrix."""
+    apps: dict[str, dict] = {}
+    for brand, slug in zip(POCKET_BRANDS, POCKET_SLUGS):
+        source = source_root / "AppStoreMetaData" / brand / "v1.0"
+        if not source.is_dir():
+            continue
+        store_id = APP_STORE_IDS.get(slug)
+        apps[slug] = {
+            "brand": brand,
+            "family": "pocketcolor",
+            "name": {lang: read_text(source / "app-name" / f"{lang}.txt") for lang in LANGS},
+            "subtitle": {lang: read_text(source / "subtitle" / f"{lang}.txt") for lang in LANGS},
+            "promo": {lang: read_text(source / "promotional-text" / f"{lang}.txt") for lang in LANGS},
+            "description": {lang: read_text(source / "app-description" / f"{lang}.txt") for lang in LANGS},
+            "headlines": {lang: json.loads(read_text(source / "screenshot-headlines" / f"{lang}.json"))["screenshots"] for lang in LANGS},
+            "screenshot_files": POCKET_SCREENSHOT_FILES,
+            "theme": {"accent": "#D7D998", "companion": "#7ABC86", "wash": "#EFF6E4", "ink": "#28413C"},
+            # The app record is verified, but its listing is not yet public.
+            "store_live": False,
+            "store_id": store_id,
+            "store_url": f"https://apps.apple.com/app/id{store_id}" if store_id else None,
+        }
+    return apps
+
+
+def app_icon_source(source_root: Path, app: dict) -> Path:
+    if app.get("family") == "pocketcolor":
+        return source_root / "ios" / "PocketColor" / "ios-projects" / app["brand"] / "App" / "Assets.xcassets" / "AppIcon.appiconset" / f'{app["brand"]}-AppIcon.png'
+    return source_root / "ios" / "LogicAtelier" / "ios-projects" / app["brand"] / app["brand"] / "Assets.xcassets" / "AppIcon.appiconset" / "AppIcon.png"
+
+
+def app_screenshot_source(source_root: Path, app: dict, lang: str, filename: str) -> Path:
+    return source_root / "AppStoreScreenshots" / app["brand"] / "v1.0" / "iPhone" / lang / f"{filename}.png"
 
 
 def route_file(lang: str, slug: str | None = None, privacy: bool = False) -> Path:
@@ -233,6 +401,10 @@ def make_header(current: Path, lang: str, slug: str | None, privacy: bool, apps:
     privacy_target = route_file(lang, slug, True) if slug else None
     nav_game = f'<a href="{esc(rel_href(current, SITE / game_home))}">{esc(c["all_games"] if not slug else apps[slug]["brand"])}</a>'
     nav_privacy = f'<a href="{esc(rel_href(current, SITE / privacy_target))}">{esc(c["privacy"])}</a>' if privacy_target else f'<a href="#privacy-pages">{esc(c["privacy"])}</a>'
+    nav_support = ""
+    if slug and apps[slug].get("family") == "pocketcolor":
+        support_href = rel_href(current, SITE / route_file(lang, slug)) + "#support"
+        nav_support = f'<a href="{esc(support_href)}">{esc(POCKET_TEXT[lang]["support_nav"])}</a>'
     brand_image = ""
     if slug:
         icon = Path("assets") / "icons" / f"{slug}.png"
@@ -242,20 +414,23 @@ def make_header(current: Path, lang: str, slug: str | None, privacy: bool, apps:
     return f'''<header class="site-header">
   <nav class="nav" aria-label="{esc(c["all_games"])}">
     <a class="brand" href="{esc(rel_href(current, SITE / home))}" aria-label="{esc(c["collection"])}"><span class="brand-mark">{brand_image}</span><span>{esc(c["collection_short"])}</span></a>
-    <div class="nav-links">{nav_game}{nav_privacy}<details class="language"><summary aria-label="{esc(c["language"])}">{esc(LANGUAGE_SHORT[lang])}</summary><div class="language-panel">{make_language_links(current, lang, slug, privacy)}</div></details></div>
-    <details class="nav-menu"><summary>{esc(c["all_games"])}</summary><div class="nav-menu-panel">{nav_game}{nav_privacy}<div class="mobile-languages"><span>{esc(c["language"])}</span>{make_language_links(current, lang, slug, privacy)}</div></div></details>
+    <div class="nav-links">{nav_game}{nav_privacy}{nav_support}<details class="language"><summary aria-label="{esc(c["language"])}">{esc(LANGUAGE_SHORT[lang])}</summary><div class="language-panel">{make_language_links(current, lang, slug, privacy)}</div></details></div>
+    <details class="nav-menu"><summary>{esc(c["all_games"])}</summary><div class="nav-menu-panel">{nav_game}{nav_privacy}{nav_support}<div class="mobile-languages"><span>{esc(c["language"])}</span>{make_language_links(current, lang, slug, privacy)}</div></div></details>
   </nav>
 </header>'''
 
 
 def make_footer(current: Path, lang: str, slug: str | None, apps: dict[str, dict]) -> str:
     c = COMMON[lang]
+    footer_note = POCKET_TEXT[lang]["footer"] if slug and apps[slug].get("family") == "pocketcolor" else c["footer_note"]
     links = [f'<a href="{esc(rel_href(current, SITE / route_file(lang))) }">{esc(c["all_games"])}</a>']
     if slug:
         links.append(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug, True)))}">{esc(c["privacy"])}</a>')
+        if apps[slug].get("family") == "pocketcolor":
+            links.append(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug)))}#support">{esc(POCKET_TEXT[lang]["support_nav"])}</a>')
     else:
         links.append(f'<a href="#privacy-pages">{esc(c["site_privacy"])}</a>')
-    return f'''<footer class="site-footer"><div class="footer-inner"><div><a class="brand" href="{esc(rel_href(current, SITE / route_file(lang)))}"><span class="brand-mark"><span class="brand-glyph" aria-hidden="true">✦</span></span><span>{esc(c["collection_short"])}</span></a><p>{esc(c["footer_note"])}</p></div><nav aria-label="{esc(c["privacy"])}">{"".join(links)}</nav></div><p class="footer-bottom">© 2026 · {esc(c["collection_short"])}.</p></footer>'''
+    return f'''<footer class="site-footer"><div class="footer-inner"><div><a class="brand" href="{esc(rel_href(current, SITE / route_file(lang)))}"><span class="brand-mark"><span class="brand-glyph" aria-hidden="true">✦</span></span><span>{esc(c["collection_short"])}</span></a><p>{esc(footer_note)}</p></div><nav aria-label="{esc(c["privacy"])}">{"".join(links)}</nav></div><p class="footer-bottom">© 2026 · {esc(c["collection_short"])}.</p></footer>'''
 
 
 def make_head(current: Path, lang: str, title: str, description: str, canonical: str, og_image: str, og_alt: str, slug: str | None, privacy: bool, jsonld: dict | None = None) -> str:
@@ -273,15 +448,17 @@ def make_head(current: Path, lang: str, title: str, description: str, canonical:
 </head>'''
 
 
-def page_shell(current: Path, lang: str, title: str, description: str, canonical: str, og_image: str, og_alt: str, slug: str | None, privacy: bool, content: str, jsonld: dict | None = None) -> str:
+def page_shell(current: Path, lang: str, title: str, description: str, canonical: str, og_image: str, og_alt: str, slug: str | None, privacy: bool, content: str, jsonld: dict | None = None, apps: dict[str, dict] | None = None) -> str:
     theme = THEMES.get(slug or "", {})
     style = "" if not theme else f' style="--accent:{theme["accent"]};--companion:{theme["companion"]};--wash:{theme["wash"]};--brand-ink:{theme["ink"]}"'
     c = COMMON[lang]
-    return f'''<!doctype html><html lang="{lang}"><!-- Generated by Website/build.py; keep site/ deployable without a build step. --><body class="{'app-page' if slug and not privacy else 'privacy-page' if privacy else 'hub-page'}"{style}><a class="skip-link" href="#main">{esc(c["skip"])}</a>{make_header(current, lang, slug, privacy, load_apps())}<main id="main">{content}</main>{make_footer(current, lang, slug, load_apps())}<script src="{esc(rel_href(current, SITE / "script.js"))}"></script></body></html>'''.replace("<body", f"{make_head(current, lang, title, description, canonical, og_image, og_alt, slug, privacy, jsonld)}<body", 1)
+    page_apps = apps or load_apps()
+    page_class = "app-page" if slug and not privacy else "privacy-page" if privacy else "hub-page"
+    return f'''<!doctype html><html lang="{lang}"><!-- Generated by Website/build.py; keep site/ deployable without a build step. --><body class="{page_class}"{style}><a class="skip-link" href="#main">{esc(c["skip"])}</a>{make_header(current, lang, slug, privacy, page_apps)}<main id="main">{content}</main>{make_footer(current, lang, slug, page_apps)}<script src="{esc(rel_href(current, SITE / "script.js"))}"></script></body></html>'''.replace("<body", f"{make_head(current, lang, title, description, canonical, og_image, og_alt, slug, privacy, jsonld)}<body", 1)
 
 
-def image_path(slug: str, lang: str, index: int) -> Path:
-    return SITE / "assets" / "screens" / lang / slug / f"0{index}_{['core','depth','solved','home'][index-1]}.jpg"
+def image_path(slug: str, lang: str, filename: str) -> Path:
+    return SITE / "assets" / "screens" / lang / slug / f"{filename}.jpg"
 
 
 def app_card(current: Path, lang: str, app: dict, slug: str) -> str:
@@ -302,9 +479,16 @@ def build_hub(lang: str, apps: dict[str, dict]) -> None:
     og = BASE + "assets/icons/evenbeam.png"
     cards = "".join(app_card(current, lang, apps[slug], slug) for slug in SLUGS)
     privacy_links = "".join(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug, True)))}">{esc(apps[slug]["brand"])} · {esc(c["privacy"])}</a>' for slug in SLUGS)
+    pocket_section = ""
+    if "reedwake" in apps:
+        pocket = apps["reedwake"]
+        p = POCKET_TEXT[lang]
+        pocket_section = f'''<section class="section" aria-labelledby="pocket-games-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["journey_label"])}</p><h2 id="pocket-games-title">{esc(p["discover_title"])}</h2></div><p>{esc(p["discover_copy"])}</p></div><div class="game-grid">{app_card(current, lang, pocket, "reedwake")}</div></section>'''
+        privacy_links += f'<a href="{esc(rel_href(current, SITE / route_file(lang, "reedwake", True)))}">Reedwake · {esc(c["privacy"])}</a>'
     content = f'''<section class="hub-hero"><div class="hero-grid"><div><p class="eyebrow">{esc(c["hub_eyebrow"])}</p><h1>{esc(c["hub_title"])}</h1><p class="lede">{esc(c["hub_lede"])}</p><a class="button button-primary" href="#games">{esc(c["games"])}</a></div><div class="orbit-art" aria-label="{esc(c["orbit_alt"])}"><span class="orbit orbit-a"></span><span class="orbit orbit-b"></span><span class="float-shape shape-a">✦</span><span class="float-shape shape-b">⌁</span><span class="float-shape shape-c">◆</span><span class="float-shape shape-d">●</span></div></div></section>
 <section class="section" id="games" aria-labelledby="games-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["games"])}</p><h2 id="games-title">{esc(c["games_intro"])}</h2></div></div><div class="game-grid">{cards}</div></section>
 <section class="section soft-section" aria-labelledby="values-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["collection"])}</p><h2 id="values-title">{esc(c["collection_title"])}</h2></div><p>{esc(c["collection_copy"])}</p></div><div class="value-grid"><article><strong>100</strong><h3>{esc(c["curated"])}</h3><p>{esc(c["curated_copy"])}</p></article><article><strong>∞</strong><h3>{esc(c["endless"])}</h3><p>{esc(c["endless_copy"])}</p></article><article><strong>◷</strong><h3>{esc(c["calm"])}</h3><p>{esc(c["calm_copy"])}</p></article></div></section>
+{pocket_section}
 <section class="section compact-section" id="privacy-pages" aria-labelledby="privacy-discover-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["privacy"])}</p><h2 id="privacy-discover-title">{esc(c["site_privacy_title"])}</h2></div><p>{esc(c["site_privacy_desc"])}</p></div><div class="privacy-links">{privacy_links}</div></section>'''
     jsonld = {"@context": "https://schema.org", "@type": "WebSite", "name": c["collection"], "url": public_route(lang), "description": description, "inLanguage": lang}
     (SITE / route_file(lang)).parent.mkdir(parents=True, exist_ok=True)
@@ -313,14 +497,17 @@ def build_hub(lang: str, apps: dict[str, dict]) -> None:
 
 def screenshot_cards(current: Path, lang: str, slug: str, app: dict, c: dict) -> str:
     cards = []
-    purpose_labels = ["01", "02", "03", "04"]
-    for idx, headline in enumerate(app["headlines"][lang], start=1):
-        target = image_path(slug, lang, idx)
+    headlines = app["headlines"][lang]
+    screenshot_files = app["screenshot_files"]
+    if len(headlines) != len(screenshot_files):
+        raise ValueError(f"{slug}/{lang}: expected {len(screenshot_files)} screenshot headlines, found {len(headlines)}.")
+    for idx, (filename, headline) in enumerate(zip(screenshot_files, headlines), start=1):
+        target = image_path(slug, lang, filename)
         # JSON parsing yields a real newline; preserve the approved two-line
         # headline rather than relying on browser whitespace collapsing.
         lines = esc(headline["headline"]).replace("\n", "<br>")
         alt = f'{app["name"][lang]} · {headline["headline"].replace(chr(10), " ")}'
-        cards.append(f'<figure class="shot-card"><div class="shot-frame"><img src="{esc(rel_href(current, target))}" width="720" height="1564" loading="lazy" alt="{esc(alt)}"></div><figcaption><span>{purpose_labels[idx-1]}</span><strong>{lines}</strong></figcaption></figure>')
+        cards.append(f'<figure class="shot-card"><div class="shot-frame"><img src="{esc(rel_href(current, target))}" width="720" height="1564" loading="lazy" alt="{esc(alt)}"></div><figcaption><span>{idx:02d}</span><strong>{lines}</strong></figcaption></figure>')
     return "".join(cards)
 
 
@@ -330,8 +517,8 @@ def build_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> None:
     name = app["name"][lang]
     intro, body_one, body_two, section_title, bullets, monetization, no_account = parse_description(app["description"][lang])
     icon = SITE / "assets" / "icons" / f"{slug}.png"
-    hero_image = image_path(slug, lang, 1)
-    og = BASE + f"assets/screens/{lang}/{slug}/01_core.jpg"
+    hero_image = image_path(slug, lang, app["screenshot_files"][0])
+    og = BASE + f"assets/screens/{lang}/{slug}/{app['screenshot_files'][0]}.jpg"
     title = f"{name} · {app['subtitle'][lang]}"
     description = app["promo"][lang]
     bullet_html = "".join(f"<li>{esc(item)}</li>" for item in bullets)
@@ -366,6 +553,99 @@ def build_privacy(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> Non
     current.write_text(page_shell(current, lang, title, description, public_route(lang, slug, True), og, name, slug, True, content), encoding="utf-8")
 
 
+def catalog_text(relative_path: str, source_key: str, lang: str) -> str:
+    catalog_path = ROOT / relative_path
+    catalog = json.loads(read_text(catalog_path))
+    value = catalog["strings"][source_key]["localizations"][lang]["stringUnit"]["value"]
+    return value
+
+
+def metadata_description(description: str) -> str:
+    blocks = []
+    for paragraph in description.split("\n\n"):
+        lines = [line.strip() for line in paragraph.splitlines() if line.strip()]
+        if not lines:
+            continue
+        bullet_lines = [line for line in lines if line.startswith(("•", "-", "–"))]
+        if len(bullet_lines) == len(lines):
+            items = "".join(f"<li>{esc(line.lstrip('•-– '))}</li>" for line in lines)
+            blocks.append(f'<ul class="checklist">{items}</ul>')
+        elif lines[0].startswith("#"):
+            blocks.append(f'<h3>{esc(lines[0].lstrip("# "))}</h3>')
+            if len(lines) > 1:
+                blocks.append(f'<p>{esc(" ".join(lines[1:]))}</p>')
+        elif len(lines) == 1 and lines[0].upper() == lines[0] and any(char.isalpha() for char in lines[0]):
+            blocks.append(f'<h3>{esc(lines[0])}</h3>')
+        else:
+            blocks.append(f'<p>{esc(" ".join(lines))}</p>')
+    return "".join(blocks)
+
+
+def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> None:
+    current = SITE / route_file(lang, slug)
+    c = COMMON[lang]
+    p = POCKET_TEXT[lang]
+    name = app["name"][lang]
+    title = f'{name} · {app["subtitle"][lang]}'
+    description = app["promo"][lang]
+    icon = SITE / "assets" / "icons" / f"{slug}.png"
+    hero = image_path(slug, lang, app["screenshot_files"][0])
+    og = BASE + f"assets/screens/{lang}/{slug}/{app['screenshot_files'][0]}.jpg"
+    headline = app["headlines"][lang][0]["headline"].replace("\n", " ")
+
+    stats = "".join([
+        f'<article><strong>48</strong><h3>{esc(p["story_routes"])}</h3></article>',
+        f'<article><strong>8</strong><h3>{esc(p["regions"])}</h3></article>',
+        f'<article><strong>8</strong><h3>{esc(p["trials"])}</h3></article>',
+        f'<article><strong>2</strong><h3>{esc(p["depths"])}</h3></article>',
+    ])
+    free_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "Wakewater Gardens: the first six story crossings.", lang)
+    full_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "Unlock seven more regions, 42 more story crossings, all eight Tide Trials, and the complete story and ending.", lang)
+    move_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "D-pad moves Nim one tile per beat. Hold a direction to keep hopping. Reach the sun-tree at the far bank. There is no countdown or lives limit.", lang)
+    depth_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "A dives or rises. Root roofs block the top. Shallow shelves block the bottom. Find their openings and change layers BEFORE crossing. A arrows beside lanes show the open layer.", lang)
+    restore_action = catalog_text("ios/PocketColor/Packages/PocketCommerce/Sources/PocketCommerce/Resources/PocketCommerce.xcstrings", "Restore purchases", lang)
+    faq = [
+        (p["controls_q"], f'{esc(p["controls_a"])}<p>{esc(move_copy)}</p><p>{esc(depth_copy)}</p>'),
+        (p["save_q"], esc(p["save_a"])),
+        (p["content_q"], esc(free_copy)),
+        (p["purchase_q"], f'{esc(full_copy)}<p>{esc(p["one_time"])} {esc(p["price"])}</p>'),
+        (p["restore_q"], f'{esc(p["restore_a_prefix"])} <strong>{esc(restore_action)}</strong>.'),
+        (p["pending_q"], esc(p["pending_a"])),
+    ]
+    faq_html = "".join(f'<details class="support-answer"><summary>{esc(question)}</summary><div>{answer}</div></details>' for question, answer in faq)
+    content = f'''<section class="app-hero"><div class="app-hero-grid"><div class="app-hero-copy"><div class="app-title"><img src="{esc(rel_href(current, icon))}" width="88" height="88" alt="{esc(f'{name} app icon')}"><div><p class="eyebrow">{esc(app["brand"])}</p><h1>{esc(name)}</h1></div></div><p class="lede">{esc(description)}</p><p class="coming"><span aria-hidden="true">●</span>{esc(c["coming"])}</p><p>{esc(p["free_replay"])}</p></div><div class="hero-shot-wrap"><div class="hero-ring" aria-hidden="true"></div><div class="hero-shot"><img src="{esc(rel_href(current, hero))}" width="720" height="1564" alt="{esc(f'{name}: {headline}')}" fetchpriority="high"></div></div></div></section>
+<section class="section" aria-labelledby="journey-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["journey_label"])}</p><h2 id="journey-title">{esc(p["journey_title"])}</h2></div><p>{esc(catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "X scouts both layers without losing time. START pauses. Settings offer gentle pace and quiet motion. The atlas has 48 story routes plus eight optional Tide Trials.", lang))}</p></div><div class="value-grid pocket-stats">{stats}</div></section>
+<section class="section soft-section" aria-labelledby="free-title"><div class="pro-panel"><div><p class="eyebrow">{esc(p["free_title"])}</p><h2 id="free-title">{esc(free_copy)}</h2><p>{esc(p["free_replay"])}</p></div><div class="pro-card"><span>{esc(p["full_title"])}</span><p>{esc(full_copy)}</p><p>{esc(p["one_time"])}</p><p>{esc(p["price"])}</p></div></div></section>
+<section class="section" aria-labelledby="story-copy-title"><div class="section-heading"><div><p class="eyebrow">{esc(app["brand"])}</p><h2 id="story-copy-title">{esc(app["subtitle"][lang])}</h2></div></div><div class="store-copy">{metadata_description(app["description"][lang])}</div></section>
+<section class="section shots-section" aria-labelledby="screens-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["screens"])}</p><h2 id="screens-title">{esc(c["screens"])}</h2></div><p>{esc(p["screens_intro"])}</p></div><div class="shots-grid">{screenshot_cards(current, lang, slug, app, c)}</div></section>
+<section class="section" id="support" aria-labelledby="support-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["faq_label"])}</p><h2 id="support-title">{esc(p["faq_title"])}</h2></div><p>{esc(p["support_intro"])}</p></div><div class="support-list">{faq_html}</div></section>'''
+    jsonld = {"@context": "https://schema.org", "@type": "SoftwareApplication", "name": name, "applicationCategory": "VideoGame", "operatingSystem": "iOS", "description": description, "image": og, "url": public_route(lang, slug), "inLanguage": lang}
+    current.parent.mkdir(parents=True, exist_ok=True)
+    current.write_text(page_shell(current, lang, title, description, public_route(lang, slug), og, name, slug, False, content, jsonld, apps), encoding="utf-8")
+
+
+def build_pocket_privacy(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> None:
+    current = SITE / route_file(lang, slug, True)
+    c = COMMON[lang]
+    p = POCKET_TEXT[lang]
+    name = app["name"][lang]
+    title = p["privacy_title"].format(name=name)
+    description = p["privacy_intro"]
+    og = BASE + f"assets/icons/{slug}.png"
+    policies = [
+        ("website", p["website_heading"], p["website_body"]),
+        ("app", p["app_heading"], p["app_body"]),
+        ("purchase", p["purchase_heading"], p["purchase_body"]),
+        ("services", p["services_heading"], p["services_body"]),
+        ("deletion", p["deletion_heading"], p["deletion_body"]),
+    ]
+    body = "".join(f'<section class="policy-section" id="{key}"><h2>{esc(heading)}</h2><p>{esc(text)}</p></section>' for key, heading, text in policies)
+    support_href = rel_href(current, SITE / route_file(lang, slug)) + "#support"
+    content = f'''<section class="page-hero"><div class="narrow"><p class="eyebrow">{esc(c["privacy_eyebrow"])}</p><h1>{esc(title)}</h1><p class="lede">{esc(p["privacy_intro"])}</p><p class="updated">{esc(p["privacy_updated"])}</p></div></section><section class="section policy-wrap"><div class="policy-summary"><div><strong>{esc(p["privacy_device"])}</strong><span>{esc(p["privacy_device_copy"])}</span></div><div><strong>{esc(p["privacy_account"])}</strong><span>{esc(p["privacy_account_copy"])}</span></div><div><strong>{esc(p["privacy_services"])}</strong><span>{esc(p["privacy_services_copy"])}</span></div></div><div class="policy-layout"><aside class="policy-nav"><strong>{esc(c["privacy"])}</strong>{"".join(f'<a href="#{key}">{esc(heading)}</a>' for key, heading, _ in policies)}<a href="{esc(support_href)}">{esc(p["support_nav"])}</a></aside><div>{body}<section class="policy-section" id="support"><h2>{esc(p["support_nav"])}</h2><p>{esc(p["privacy_contact"])}</p><a href="{esc(support_href)}">{esc(p["privacy_back"])}</a></section></div></div></section>'''
+    current.parent.mkdir(parents=True, exist_ok=True)
+    current.write_text(page_shell(current, lang, title, description, public_route(lang, slug, True), og, name, slug, True, content, apps=apps), encoding="utf-8")
+
+
 def require_sips() -> str:
     sips = shutil.which("sips")
     if not sips:
@@ -382,9 +662,38 @@ def validate_sources(source_root: Path = ROOT) -> None:
         for kind in ("app-name", "subtitle", "promotional-text", "app-description"):
             required.extend(metadata / kind / f"{lang}.txt" for lang in LANGS)
         required.extend(metadata / "screenshot-headlines" / f"{lang}.json" for lang in LANGS)
-        icon = source_root / "ios" / "ios-projects" / brand / brand / "Assets.xcassets" / "AppIcon.appiconset" / "AppIcon.png"
-        required.append(icon)
-        required.extend(source_root / "AppStoreScreenshots" / brand / "v1.0" / "iPhone" / lang / f"{filename}.png" for lang in LANGS for filename in ("01_core", "02_depth", "03_solved", "04_home"))
+        required.append(app_icon_source(source_root, {"brand": brand, "family": "puzzle"}))
+        required.extend(app_screenshot_source(source_root, {"brand": brand}, lang, filename) for lang in LANGS for filename in PUZZLE_SCREENSHOT_FILES)
+    for brand in POCKET_BRANDS:
+        metadata = source_root / "AppStoreMetaData" / brand / "v1.0"
+        if not metadata.is_dir():
+            continue
+        for kind in ("app-name", "subtitle", "promotional-text", "app-description"):
+            required.extend(metadata / kind / f"{lang}.txt" for lang in LANGS)
+        headline_files = [metadata / "screenshot-headlines" / f"{lang}.json" for lang in LANGS]
+        required.extend(headline_files)
+        for lang, headline_path in zip(LANGS, headline_files):
+            if headline_path.is_file():
+                count = len(json.loads(read_text(headline_path))["screenshots"])
+                if count != len(POCKET_SCREENSHOT_FILES):
+                    raise ValueError(f"{headline_path} must contain {len(POCKET_SCREENSHOT_FILES)} screenshot headlines; found {count}.")
+        required.extend([
+            source_root / "ios" / "PocketColor" / "Packages" / "Reedwake" / "Sources" / "ReedwakeKit" / "Resources" / "Reedwake.xcstrings",
+            source_root / "ios" / "PocketColor" / "Packages" / "PocketCommerce" / "Sources" / "PocketCommerce" / "Resources" / "PocketCommerce.xcstrings",
+        ])
+        for lang in LANGS:
+            expected = {
+                "marketing-url": public_route(lang, brand.lower()),
+                "privacy-policy-url": public_route(lang, brand.lower(), True),
+                "support-url": public_route(lang, brand.lower()),
+            }
+            for kind, url in expected.items():
+                field = metadata / kind / f"{lang}.txt"
+                required.append(field)
+                if field.is_file() and read_text(field) != url:
+                    raise ValueError(f"{field} must match the website route {url!r}.")
+        required.append(app_icon_source(source_root, {"brand": brand, "family": "pocketcolor"}))
+        required.extend(app_screenshot_source(source_root, {"brand": brand}, lang, filename) for lang in LANGS for filename in POCKET_SCREENSHOT_FILES)
     missing = [path for path in required if not path.is_file() or path.stat().st_size == 0]
     if missing:
         sample = "\n".join(f"  - {path}" for path in missing[:12])
@@ -407,22 +716,22 @@ def convert_image(source: Path, destination: Path, max_width: int | None = None,
 def copy_assets(apps: dict[str, dict]) -> None:
     sips = require_sips()
     for slug, app in apps.items():
-        source_icon = ROOT / "ios" / "ios-projects" / app["brand"] / app["brand"] / "Assets.xcassets" / "AppIcon.appiconset" / "AppIcon.png"
+        source_icon = app_icon_source(ROOT, app)
         icon_destination = SITE / "assets" / "icons" / f"{slug}.png"
         icon_destination.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run([sips, "-Z", "512", str(source_icon), "--out", str(icon_destination)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         for lang in LANGS:
-            for idx, filename in enumerate(["01_core", "02_depth", "03_solved", "04_home"], start=1):
-                source = ROOT / "AppStoreScreenshots" / app["brand"] / "v1.0" / "iPhone" / lang / f"{filename}.png"
-                convert_image(source, image_path(slug, lang, idx), 720, 84)
+            for filename in app["screenshot_files"]:
+                source = app_screenshot_source(ROOT, app, lang, filename)
+                convert_image(source, image_path(slug, lang, filename), 720, 84)
 
 
-def write_static_files() -> None:
+def write_static_files(apps: dict[str, dict]) -> None:
     (SITE / "app-ads.txt").write_text("google.com, pub-8504168355168096, DIRECT, f08c47fec0942fa0\n", encoding="utf-8")
     (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {BASE}sitemap.xml\n", encoding="utf-8")
     routes = [public_route(lang) for lang in LANGS]
-    routes += [public_route(lang, slug) for lang in LANGS for slug in SLUGS]
-    routes += [public_route(lang, slug, True) for lang in LANGS for slug in SLUGS]
+    routes += [public_route(lang, slug) for lang in LANGS for slug in apps]
+    routes += [public_route(lang, slug, True) for lang in LANGS for slug in apps]
     entries = "\n".join(f"  <url><loc>{esc(route)}</loc></url>" for route in routes)
     (SITE / "sitemap.xml").write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{entries}\n</urlset>\n', encoding="utf-8")
     (SITE / "404.html").write_text(f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found · Puzzle worlds</title><meta name="robots" content="noindex"><link rel="stylesheet" href="{BASE}styles.css"></head><body class="error-page"><main><p class="eyebrow">404</p><h1>This puzzle piece is missing.</h1><p>The page you requested does not exist.</p><a class="button button-primary" href="{BASE}">Return to the puzzle worlds</a></main></body></html>''', encoding="utf-8")
@@ -432,7 +741,7 @@ def main() -> None:
     global SITE
     deploy_site = SITE
     validate_sources()
-    apps = load_apps()
+    apps = {**load_apps(), **load_pocket_games()}
     if not deploy_site.is_dir():
         raise RuntimeError(f"Expected existing deployment directory at {deploy_site}; refusing to replace an unexpected path.")
 
@@ -445,9 +754,13 @@ def main() -> None:
         for lang in LANGS:
             build_hub(lang, apps)
             for slug, app in apps.items():
-                build_app(lang, slug, app, apps)
-                build_privacy(lang, slug, app, apps)
-        write_static_files()
+                if app["family"] == "pocketcolor":
+                    build_pocket_app(lang, slug, app, apps)
+                    build_pocket_privacy(lang, slug, app, apps)
+                else:
+                    build_app(lang, slug, app, apps)
+                    build_privacy(lang, slug, app, apps)
+        write_static_files(apps)
         generated_pages = len(list(SITE.rglob("*.html")))
         generated_assets = len(list((SITE / "assets").rglob("*")))
     except BaseException:
@@ -483,6 +796,8 @@ STYLES = r'''
 @media(max-width:850px){.nav-links{display:none}.nav-menu{display:block}.hero-grid,.app-hero-grid{grid-template-columns:1fr;gap:2rem;min-height:0}.hero-grid,.app-hero-grid{padding-top:5rem;padding-bottom:4rem}.orbit-art,.hero-shot-wrap{min-height:390px}.hero-shot{right:20%;width:min(52%,255px)}.section-heading,.split{grid-template-columns:1fr;gap:1rem}.game-grid{grid-template-columns:repeat(2,1fr)}.shots-grid{grid-template-columns:repeat(2,1fr)}.shot-card:nth-child(even){padding-top:1rem}.policy-layout{grid-template-columns:1fr;gap:1.5rem}.policy-nav{position:static}.privacy-links{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){h1{font-size:clamp(2.7rem,13vw,4.3rem)}h2{font-size:clamp(2rem,10vw,3rem)}.nav{min-height:70px}.hero-grid,.app-hero-grid{padding-top:4.2rem}.game-grid,.value-grid,.privacy-links,.shots-grid,.policy-summary{grid-template-columns:1fr}.orbit-art{min-height:325px}.shape-a{width:90px;height:90px;left:12%}.shape-b{width:110px;height:70px;right:5%}.shape-c{width:83px;height:83px;left:15%}.shape-d{right:15%;width:60px;height:60px}.app-title{align-items:flex-start;gap:.8rem}.app-title img{width:66px;height:66px;border-radius:19px}.app-title h1{font-size:clamp(2.35rem,10vw,3.6rem)}.hero-shot-wrap{min-height:340px}.hero-shot{right:19%;width:min(59%,230px)}.pro-panel{grid-template-columns:1fr}.footer-inner{grid-template-columns:1fr;gap:1.5rem}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-shot,.float-shape,.game-card,.shot-frame,.button{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none;transition:none}.game-card:hover,.shot-card:hover .shot-frame,.button:hover{transform:none}}
+.pocket-stats{grid-template-columns:repeat(4,1fr)}.store-copy{display:grid;gap:.65rem;max-width:850px}.store-copy p{margin:0;color:var(--muted);font-size:1.05rem}.support-list{display:grid;gap:.75rem;max-width:900px}.support-answer{padding:1.15rem 1.35rem;border:1px solid var(--line);border-radius:18px;background:#fff}.support-answer summary{cursor:pointer;color:var(--brand-ink);font-weight:850}.support-answer>div{padding-top:.85rem;color:var(--muted)}.support-answer p{margin:.7rem 0 0}.support-answer p:first-child{margin-top:0}
+@media(max-width:850px){.pocket-stats{grid-template-columns:repeat(2,1fr)}}
 '''
 
 

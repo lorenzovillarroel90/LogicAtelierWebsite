@@ -7,10 +7,16 @@ editing it.
 ## Source of truth
 
 - Product names, subtitles, descriptions, promotional text, and screenshot
-  headlines come from `../AppStoreMetaData/<Brand>/v1.0/`.
-- Screenshot sources are the four iPhone captures at
-  `../AppStoreScreenshots/<Brand>/v1.0/iPhone/<locale>/`.
-- Icons come from the matching iOS app asset catalog.
+  headlines come from `../AppStoreMetaData/<Brand>/v1.0/` for both the ten
+  LogicAtelier puzzle games and PocketColor games.
+- Puzzle screenshot sources are four iPhone captures at
+  `../AppStoreScreenshots/<Brand>/v1.0/iPhone/<locale>/`. PocketColor game
+  pages use six captures; Reedwake's approved sequence is `01_core`,
+  `02_world`, `03_world`, `04_depth`, `05_solved`, `06_home`. The generator
+  makes web-sized derivatives; it does not synthesize or replace storefront
+  shots.
+- LogicAtelier icons come from their project asset catalogs. PocketColor icons
+  come from `../ios/PocketColor/ios-projects/<Brand>/App/Assets.xcassets/`.
 - Run `python3 build.py` to regenerate deployable output after source changes.
 
 ## Public content
@@ -25,14 +31,17 @@ editing it.
   listing is live, enable it only once its ID and URL are verified. The
   generator must render a CTA and JSON-LD `downloadUrl` only when both the
   live switch and verified URL are present.
-- Keep the app privacy wording aligned with the evidence in the iOS project:
-  local progress/settings, no account, Google Mobile Ads for rewarded hints
-  and selected completion interstitials for free users, StoreKit entitlement
-  state for the one-time Pro purchase, and no payment-card data received by
-  the app. Do not imply all ads are personalized or non-personalized.
-- Localized app pages and privacy pages must use the approved locale's copy and
-  screenshot matrix. Do not silently machine-translate established product
-  terminology.
+- Keep each app's privacy wording aligned with its shipped configuration. The
+  LogicAtelier puzzle games use local progress/settings, Google Mobile Ads for
+  free-user hints and selected interstitials, and StoreKit for Pro. PocketColor
+  games such as Reedwake have local progress, no ads/accounts/analytics, and
+  StoreKit only for an approved one-time entitlement. In both families the app
+  does not receive payment-card data. Never copy the ad disclosure to a game
+  that does not ship advertising.
+- Localized app pages, support content, and privacy pages must use the approved
+  locale's copy and screenshot matrix. PocketColor terminology should follow
+  the game's reviewed `*.xcstrings` catalog. Do not silently machine-translate
+  established product terminology.
 
 ## SEO and accessibility
 

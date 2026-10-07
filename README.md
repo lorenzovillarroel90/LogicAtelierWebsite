@@ -1,7 +1,7 @@
 # Puzzle worlds website
 
-Static marketing and privacy pages for Evenbeam, Knotide, Pipebloom, Rayfold,
-Laneweave, Shaplet, Driftlings, Overprint, Rollmark, and Sproutbound.
+Static marketing, support and privacy pages for the ten LogicAtelier puzzle
+games and PocketColor adventures, beginning with Reedwake.
 
 ## Deployment
 
@@ -35,19 +35,22 @@ From the parent repository on macOS:
 python3 Website/build.py
 ```
 
-The generator reads only approved App Store metadata, the four localized iPhone
-screenshots for each app, and the app icons. It creates 720px-wide JPEG web
-derivatives and 512px PNG icon derivatives without modifying source assets.
-The generated `site/` output remains committed so GitHub Pages does not need a
-build step.
+The generator reads approved App Store metadata, four localized iPhone
+screenshots for each puzzle app, six for each PocketColor game, and the matching
+app icons. Reedwake's screenshot order is `01_core`, `02_world`, `03_world`,
+`04_depth`, `05_solved`, `06_home`. It creates web-sized JPEG and 512px PNG
+derivatives without modifying source assets. The generated `site/` output
+remains committed so GitHub Pages does not need a build step.
 
 ## Content and localization rules
 
 - Keep product names, subtitles, descriptions, and screenshot headlines in
   sync with `../AppStoreMetaData/<Brand>/v1.0/`.
-- Every language has a hub, ten app pages, and ten matching privacy pages.
-  Keep canonical URLs, reciprocal `hreflang`, sitemap entries, image locale,
-  and internal links in step when adding or changing a route.
+- Every language has the puzzle hub, the app pages, and matching privacy pages.
+  PocketColor landing pages include a localized help section; Reedwake's
+  support URL points to its landing page. Keep canonical URLs, reciprocal
+  `hreflang`, sitemap entries, image locale, and internal links in step when
+  adding or changing a route.
 - Do not add App Store links until an app is actually published. Use the
   localized coming-soon label for unreleased apps.
 - Verified numeric App Store IDs are kept in `APP_STORE_IDS`; the generator
@@ -56,10 +59,10 @@ build step.
   After a listing is live, enable that app only after its ID and URL are
   verified. The generator emits the CTA and JSON-LD `downloadUrl` only when
   both the live switch and verified URL are present.
-- Privacy wording must remain conservative and factual: local progress and
-  settings, Google Mobile Ads for free-user rewarded hints and selected
-  completion interstitials, StoreKit entitlement state, and no payment-card
-  data in the app.
+- Privacy wording must remain conservative and factual for each app family.
+  LogicAtelier puzzle games disclose their ad and Pro services. Reedwake has
+  local progress/settings, no ads/accounts/analytics, and StoreKit for the
+  one-time full-game unlock; the app does not receive payment-card data.
 - Do not add trackers, forms, cookies, external runtime dependencies, invented
   ratings, prices, reviews, awards, or release dates.
 

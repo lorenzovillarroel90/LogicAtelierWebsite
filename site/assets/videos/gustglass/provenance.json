@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "game": "Gustglass",
+  "language": "en",
+  "durationSeconds": 24.0,
+  "dimensions": [
+    886,
+    1920
+  ],
+  "sourceMovieSHA256": "e1b380d8f7619968f54911c6ad03bb8774650ccafc1f0097916550239647b66d",
+  "sourceReportSHA256": "740237f4fe6d1ed8518a55df3282f0438532c0ec1c993c9ea3c7cfb4bc62cf81",
+  "sourceKind": "offline gameplay composited into observed real native screenshots",
+  "deviceCaptured": false,
+  "audio": "bundled music paired offline; native sound effects not captured",
+  "purchaseDisclosure": "Additional content requires / one-time Full Game purchase",
+  "derivation": "stream-copy MP4 remux with faststart; JPEG poster from one real selected movie frame",
+  "posterSeconds": 0,
+  "posterFrameIndex": 0,
+  "movieSHA256": "6d9ee0496754ddf47952649cc47776b9f29519edfdc9e68d856349e6aad86d73",
+  "posterSHA256": "c506c8adfba9d571d80002df1abcce7dd44c3a77afa0a498eb3109b81393eb48",
+  "completeDecodePassed": true
+}

@@ -40,7 +40,7 @@ screenshots for each puzzle app, approved six-shot PocketColor matrices, and the
 matching app icons. Product/help/privacy routes can be published before new game
 media is approved: these pages show their real icon and approved localized copy,
 without an empty gallery, screenshot promise or placeholder. `APPROVED_POCKET_MEDIA`
-is the explicit reviewed-matrix owner; Only Reedwake remains enabled while revised paid-content disclosure products for the six other games await renewed lead review. Add a
+is the explicit reviewed-matrix owner; Reedwake plus the complete revised Afterlight Run, Mothline, Brassbird, Hushshore and Spindlewatch matrices are enabled after lead review. Gustglass remains held until both Italian home-image retakes are accepted. Add a
 game there after lead approval of all six shots in all five languages. Missing or
 empty approved sources still fail before replacing `site/`. Run
 `python3 Website/build.py --require-all-media` for the separate final all-game media
@@ -93,7 +93,7 @@ non-English privacy route. Remove `.preview/` after the check. Keep
 
 `approved-videos.json` is the single hash-pinned video owner. One English edit is
 shared across all five languages with localized “English gameplay” labels, native
-HTML controls, a real frame-zero poster, `preload="metadata"`, and no autoplay.
+HTML controls, a reviewed real-frame poster, `preload="metadata"`, and no autoplay.
 Only movies explicitly accepted by the lead may enter that map. Gallery acceptance
 is independent; adding a video never approves screenshots or App Store availability.
 
@@ -119,7 +119,7 @@ python3 Website/build.py
 The explicit import verifies each new or changed external movie/report against
 the reviewed hashes before replacing owned inputs. Already valid durable movies
 are retained, so importing a later game never requires prior temporary deliveries. It stream-copies the accepted picture/audio
-into a faststart MP4, extracts the first decoded frame as a JPEG poster, checks full
+into a faststart MP4, extracts the selected real frame as a JPEG poster, checks full
 decoding, and records safe source/derivative provenance. It does not publish or
 replace `site/`. Regular builds need neither FFmpeg nor the original delivery
 folders; they verify every durable input hash before staging. Changed or missing
@@ -138,3 +138,11 @@ for that default again, invent an email or publish private App Review contacts.
 media hold. Durable movie/poster/provenance inputs remain intact, while generation
 omits all candidate movie references. Re-enable only after the concrete media
 review; new galleries likewise require revised, approved product PNGs.
+
+Poster selection belongs to `posterSeconds` in the approved media map. Default
+zero preserves the first decoded frame; a reviewed offset may select a clearer
+frame when an opening wipe is blank. The importer requires an exact frame time
+within the movie and records seconds/frame index in safe provenance. Hushshore
+uses the meaningful guardian/player frame at one second. This changes only the
+poster; no movie frames, transitions or cuts are removed. Existing valid durable
+movies/posters remain byte-for-byte unchanged when new games are imported.

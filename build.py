@@ -32,9 +32,9 @@ POCKET_BRANDS = ["Reedwake", "AfterlightRun", "Mothline", "Brassbird", "Hushshor
 POCKET_SLUGS = [brand.lower() for brand in POCKET_BRANDS]
 # Lead-approved complete five-language storefront matrices only. Add a game
 # after its product media review; source file presence does not imply approval.
-# New game galleries remain held until revised purchase-disclosure products
-# receive complete localized lead acceptance. Preserve Reedwake’s active media.
-APPROVED_POCKET_MEDIA = {"Reedwake"}
+# Lead-approved complete localized matrices. Gustglass remains held until its
+# two Italian home-image retakes receive final acceptance.
+APPROVED_POCKET_MEDIA = {"Reedwake", "AfterlightRun", "Mothline", "Brassbird", "Hushshore", "Spindlewatch"}
 PUZZLE_SCREENSHOT_FILES = ("01_core", "02_depth", "03_solved", "04_home")
 POCKET_SCREENSHOT_FILES = ("01_core", "02_world", "03_world", "04_depth", "05_solved", "06_home")
 APP_STORE_IDS = {
@@ -315,14 +315,14 @@ VIDEO_TEXT = {
 }
 
 
-def approved_videos() -> dict[str, dict]:
+def approved_videos(include_held: bool = False) -> dict[str, dict]:
     """One explicit, hash-pinned source owner for lead-approved English movies."""
     manifest = json.loads(read_text(WEBSITE / "approved-videos.json"))
     if manifest["schemaVersion"] != 1:
         raise ValueError("Unsupported approved video manifest version.")
     # A lead hold removes all candidate movies from generated/public pages.
     # Durable accepted sources stay intact for the subsequent media review.
-    videos = manifest["videos"] if manifest.get("publicationEnabled", True) else {}
+    videos = manifest["videos"] if include_held or manifest.get("publicationEnabled", True) else {}
     if set(videos) - set(POCKET_BRANDS):
         raise ValueError("Approved video manifest names an unknown game.")
     for video in videos.values():
@@ -717,12 +717,14 @@ def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> 
         move_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "D-pad moves Nim one tile per beat. Hold a direction to keep hopping. Reach the sun-tree at the far bank. There is no countdown or lives limit.", lang)
         depth_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "A dives or rises. Root roofs block the top. Shallow shelves block the bottom. Find their openings and change layers BEFORE crossing. A arrows beside lanes show the open layer.", lang)
         journey_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "X scouts both layers without losing time. START pauses. Settings offer gentle pace and quiet motion. The atlas has 48 story routes plus eight optional Tide Trials.", lang)
+        free_intro = f'<p class="eyebrow">{esc(p["free_title"])}</p><h2 id="free-title">{esc(free_copy)}</h2><p>{esc(p["free_replay"])}</p>'
     else:
         product = app["website"][lang]
         stats = ""
         free_copy, full_copy = product["free"], product["full"]
         move_copy, depth_copy = "", ""
         journey_copy = product["journey"]
+        free_intro = f'<h2 id="free-title">{esc(p["free_title"])}</h2><p>{esc(free_copy)}</p>'
     restore_action = catalog_text("ios/PocketColor/Packages/PocketCommerce/Sources/PocketCommerce/Resources/PocketCommerce.xcstrings", "Restore purchases", lang)
     faq = [
         (p["controls_q"], f'{esc(p["controls_a"])}<p>{esc(move_copy)}</p><p>{esc(depth_copy)}</p>'),
@@ -736,7 +738,7 @@ def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> 
     faq_html = "".join(f'<details class="support-answer"><summary>{esc(question)}</summary><div>{answer}</div></details>' for question, answer in faq)
     content = f'''<section class="app-hero"><div class="app-hero-grid{' copy-only' if not has_media else ''}"><div class="app-hero-copy"><div class="app-title"><img src="{esc(rel_href(current, icon))}" width="88" height="88" alt="{esc(f'{name} app icon')}"><div><p class="eyebrow">{esc(public_name(app, lang))}</p><h1>{esc(name)}</h1></div></div><p class="lede">{esc(description)}</p>{store_cta}<p>{esc(p["free_replay"])}</p></div>{hero_html}</div></section>
 <section class="section" aria-labelledby="journey-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["journey_label"])}</p><h2 id="journey-title">{esc(p["journey_title"])}</h2></div><p>{esc(journey_copy)}</p></div><div class="value-grid pocket-stats">{stats}</div></section>
-<section class="section soft-section" aria-labelledby="free-title"><div class="pro-panel"><div><p class="eyebrow">{esc(p["free_title"])}</p><h2 id="free-title">{esc(free_copy)}</h2><p>{esc(p["free_replay"])}</p></div><div class="pro-card"><span>{esc(p["full_title"])}</span><p>{esc(full_copy)}</p><p>{esc(p["one_time"])}</p><p>{esc(p["price"])}</p></div></div></section>
+<section class="section soft-section" aria-labelledby="free-title"><div class="pro-panel"><div>{free_intro}</div><div class="pro-card"><span>{esc(p["full_title"])}</span><p>{esc(full_copy)}</p><p>{esc(p["one_time"])}</p><p>{esc(p["price"])}</p></div></div></section>
 <section class="section" aria-labelledby="story-copy-title"><div class="section-heading"><div><p class="eyebrow">{esc(public_name(app, lang))}</p><h2 id="story-copy-title">{esc(app["subtitle"][lang])}</h2></div></div><div class="store-copy">{metadata_description(app["description"][lang])}</div></section>
 {gallery_html}
 {gameplay_video(current, lang, slug, app)}
@@ -864,7 +866,7 @@ def file_sha256(path: Path) -> str:
 
 def validate_video_sources(source_root: Path | None, ffmpeg: str | None, videos: dict[str, dict] | None = None) -> list[dict]:
     if videos is None:
-        videos = approved_videos()
+        videos = approved_videos(include_held=True)
     if not videos:
         return []
     if source_root is None or not ffmpeg or not Path(ffmpeg).is_file():
@@ -879,6 +881,9 @@ def validate_video_sources(source_root: Path | None, ffmpeg: str | None, videos:
         report = json.loads(read_text(report_path))
         if not (report["outputSHA256"] == video["movieSHA256"] and report["language"] == "en" and report["duration"] == 24 and report["dimensions"] == [886, 1920] and report["completeDecodePassed"] and report["deviceCaptured"] is False and report["purchaseDisclosure"]):
             raise ValueError(f"{brand}: approved video provenance does not match the published format/source.")
+        poster_seconds = video.get("posterSeconds", 0)
+        if not isinstance(poster_seconds, (int, float)) or isinstance(poster_seconds, bool) or not 0 <= poster_seconds < report["duration"] or abs(poster_seconds * report["fps"] - round(poster_seconds * report["fps"])) > 0.000001:
+            raise ValueError(f"{brand}: poster must select one real frame within the unchanged movie.")
         validated.append({"brand": brand, "source": source, "approval": video, "report": report})
     return validated
 
@@ -891,10 +896,11 @@ def make_video_derivatives(videos: list[dict], ffmpeg: str, output_root: Path) -
         # Remux only: preserve the accepted encoded video/audio streams, moving
         # MP4 metadata ahead of media for web playback. Do not reconstruct clips.
         subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-i", str(video["source"]), "-map", "0:v:0", "-map", "0:a:0", "-c", "copy", "-map_metadata", "-1", "-movflags", "+faststart", str(movie)], check=True)
-        subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-i", str(movie), "-frames:v", "1", "-q:v", "3", str(poster)], check=True)
+        poster_seconds = video["approval"].get("posterSeconds", 0)
+        subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-ss", str(poster_seconds), "-i", str(movie), "-frames:v", "1", "-q:v", "3", str(poster)], check=True)
         subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-i", str(movie), "-f", "null", "-"], check=True)
         report = video["report"]
-        provenance = {"schemaVersion": 1, "game": video["brand"], "language": "en", "durationSeconds": report["duration"], "dimensions": report["dimensions"], "sourceMovieSHA256": video["approval"]["movieSHA256"], "sourceReportSHA256": video["approval"]["reportSHA256"], "sourceKind": report["kind"], "deviceCaptured": False, "audio": report["audio"], "purchaseDisclosure": report["purchaseDisclosure"], "derivation": "stream-copy MP4 remux with faststart; first decoded frame JPEG poster", "movieSHA256": file_sha256(movie), "posterSHA256": file_sha256(poster), "completeDecodePassed": True}
+        provenance = {"schemaVersion": 1, "game": video["brand"], "language": "en", "durationSeconds": report["duration"], "dimensions": report["dimensions"], "sourceMovieSHA256": video["approval"]["movieSHA256"], "sourceReportSHA256": video["approval"]["reportSHA256"], "sourceKind": report["kind"], "deviceCaptured": False, "audio": report["audio"], "purchaseDisclosure": report["purchaseDisclosure"], "derivation": "stream-copy MP4 remux with faststart; JPEG poster from one real selected movie frame", "posterSeconds": poster_seconds, "posterFrameIndex": round(poster_seconds * report["fps"]), "movieSHA256": file_sha256(movie), "posterSHA256": file_sha256(poster), "completeDecodePassed": True}
         (folder / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
 
 
@@ -907,7 +913,7 @@ def validate_owned_video(brand: str, video: dict) -> None:
         if not source.is_file() or file_sha256(source) != video[field + "SHA256"]:
             raise ValueError(f"{brand}: durable approved {field} is absent or changed; site/ was not changed.")
     provenance = json.loads(read_text(WEBSITE / video["webProvenance"]))
-    if not (provenance["game"] == brand and provenance["language"] == "en" and provenance["sourceMovieSHA256"] == video["movieSHA256"] and provenance["sourceReportSHA256"] == video["reportSHA256"] and provenance["movieSHA256"] == video["webMovieSHA256"] and provenance["posterSHA256"] == video["webPosterSHA256"] and provenance["completeDecodePassed"]):
+    if not (provenance["game"] == brand and provenance["language"] == "en" and provenance["sourceMovieSHA256"] == video["movieSHA256"] and provenance["sourceReportSHA256"] == video["reportSHA256"] and provenance["movieSHA256"] == video["webMovieSHA256"] and provenance["posterSHA256"] == video["webPosterSHA256"] and provenance.get("posterSeconds", 0) == video.get("posterSeconds", 0) and provenance["completeDecodePassed"]):
         raise ValueError(f"{brand}: web provenance does not match its accepted source.")
 
 
@@ -923,7 +929,7 @@ def import_approved_videos(source_root: Path | None, ffmpeg: str | None) -> None
     """Import approved web derivatives once; original delivery/proofs stay external."""
     manifest = json.loads(read_text(WEBSITE / "approved-videos.json"))
     pending, retained = {}, {}
-    for brand, video in approved_videos().items():
+    for brand, video in approved_videos(include_held=True).items():
         try:
             validate_owned_video(brand, video)
             retained[brand] = video

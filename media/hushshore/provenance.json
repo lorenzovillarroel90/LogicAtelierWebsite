@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "game": "Hushshore",
+  "language": "en",
+  "durationSeconds": 24.0,
+  "dimensions": [
+    886,
+    1920
+  ],
+  "sourceMovieSHA256": "19bc699b093a72a62cd9915a832b2e23fc11a2177eba187bd43975ccf975faad",
+  "sourceReportSHA256": "e2b78ec4cbbc88b7d20e1647c7ff8a4c99ce3976820e000b8fa2d40c176165ff",
+  "sourceKind": "offline gameplay composited into observed real native screenshots",
+  "deviceCaptured": false,
+  "audio": "bundled music paired offline; native sound effects not captured",
+  "purchaseDisclosure": "Additional content requires / one-time Full Game purchase",
+  "derivation": "stream-copy MP4 remux with faststart; JPEG poster from one real selected movie frame",
+  "posterSeconds": 1,
+  "posterFrameIndex": 30,
+  "movieSHA256": "bb0670984a479d803b5c209227c0feddfcf3fa14e8a0bb3ba32735554bc2da0d",
+  "posterSHA256": "978c277eaacec9d03941f187669d5493f8cfd72b8906be4741d1fe69874991b7",
+  "completeDecodePassed": true
+}

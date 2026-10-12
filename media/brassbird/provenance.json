@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "game": "Brassbird",
+  "language": "en",
+  "durationSeconds": 24.0,
+  "dimensions": [
+    886,
+    1920
+  ],
+  "sourceMovieSHA256": "6ee98b2599855a515a2b23c38abded7fe219975d19838372df4fc32e7692139b",
+  "sourceReportSHA256": "8297ad0ed6f994f19d6dae231c03e99ae0026c6c86ce1ddb3fcf8ce3723a535d",
+  "sourceKind": "offline gameplay composited into observed real native screenshots",
+  "deviceCaptured": false,
+  "audio": "bundled music paired offline; native sound effects not captured",
+  "purchaseDisclosure": "Additional content requires / one-time Full Game purchase",
+  "derivation": "stream-copy MP4 remux with faststart; JPEG poster from one real selected movie frame",
+  "posterSeconds": 0,
+  "posterFrameIndex": 0,
+  "movieSHA256": "fc2180c20e815db40bb74727679ed77dee47121af97e60ec6c13f657a37f3a38",
+  "posterSHA256": "23425761dd015204f9dc14e06742113c277b093b46e256e62e579e3602875a3e",
+  "completeDecodePassed": true
+}

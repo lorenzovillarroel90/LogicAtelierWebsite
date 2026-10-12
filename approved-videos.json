@@ -24,7 +24,59 @@
       "webPosterSHA256": "744f3b3ee5cc180e87bf062ca21402c66944fbf0575bad5afd1f4e71bfade107",
       "webProvenance": "media/spindlewatch/provenance.json",
       "webProvenanceSHA256": "a0b9660b2b778bdf1ccffb23ec0dc765c324757738b2467a1f22118e2f1dd24a"
+    },
+    "AfterlightRun": {
+      "movie": "AfterlightRun/AfterlightRun-Console-Review-24s.mp4",
+      "report": "AfterlightRun/AfterlightRun-Console-Review-24s.json",
+      "movieSHA256": "fdf13d62b8f6098e29e17378ead138b5cc78f887c4e19cb76fa2aadffce04fb9",
+      "reportSHA256": "86e41f5536927b9da961d33c836193f49d5010284969bc03e3c740db3cee90b8",
+      "posterSeconds": 0,
+      "webMovie": "media/afterlightrun/gameplay-en.mp4",
+      "webMovieSHA256": "117c5e62102bb741869ced5f1341aa58e08dd8c260f97d6b67882d6a57d5e829",
+      "webPoster": "media/afterlightrun/poster.jpg",
+      "webPosterSHA256": "b2cbdfec0dab3b31ee4986fe13b537467058bbeb19b5a9182dd401f989bcef36",
+      "webProvenance": "media/afterlightrun/provenance.json",
+      "webProvenanceSHA256": "e40d0fcdf75cf91c6a51b8723d55639c6be584962134b0b317a81170b85d27c1"
+    },
+    "Hushshore": {
+      "movie": "Hushshore/Hushshore-Console-Review-24s.mp4",
+      "report": "Hushshore/Hushshore-Console-Review-24s.json",
+      "movieSHA256": "19bc699b093a72a62cd9915a832b2e23fc11a2177eba187bd43975ccf975faad",
+      "reportSHA256": "e2b78ec4cbbc88b7d20e1647c7ff8a4c99ce3976820e000b8fa2d40c176165ff",
+      "posterSeconds": 1,
+      "webMovie": "media/hushshore/gameplay-en.mp4",
+      "webMovieSHA256": "bb0670984a479d803b5c209227c0feddfcf3fa14e8a0bb3ba32735554bc2da0d",
+      "webPoster": "media/hushshore/poster.jpg",
+      "webPosterSHA256": "978c277eaacec9d03941f187669d5493f8cfd72b8906be4741d1fe69874991b7",
+      "webProvenance": "media/hushshore/provenance.json",
+      "webProvenanceSHA256": "3e2a5b2d61a6c8baa011a664b0541981c6ee809c14f982ca83aab57991054770"
+    },
+    "Brassbird": {
+      "movie": "Brassbird/Brassbird-Console-Review-24s.mp4",
+      "report": "Brassbird/Brassbird-Console-Review-24s.json",
+      "movieSHA256": "6ee98b2599855a515a2b23c38abded7fe219975d19838372df4fc32e7692139b",
+      "reportSHA256": "8297ad0ed6f994f19d6dae231c03e99ae0026c6c86ce1ddb3fcf8ce3723a535d",
+      "posterSeconds": 0,
+      "webMovie": "media/brassbird/gameplay-en.mp4",
+      "webMovieSHA256": "fc2180c20e815db40bb74727679ed77dee47121af97e60ec6c13f657a37f3a38",
+      "webPoster": "media/brassbird/poster.jpg",
+      "webPosterSHA256": "23425761dd015204f9dc14e06742113c277b093b46e256e62e579e3602875a3e",
+      "webProvenance": "media/brassbird/provenance.json",
+      "webProvenanceSHA256": "0d8f8cc31fa571cbde282b973b04e9eef8182249d3dd15086319d2cb4879b1c1"
+    },
+    "Gustglass": {
+      "movie": "Gustglass/Gustglass-Console-Review-24s.mp4",
+      "report": "Gustglass/Gustglass-Console-Review-24s.json",
+      "movieSHA256": "e1b380d8f7619968f54911c6ad03bb8774650ccafc1f0097916550239647b66d",
+      "reportSHA256": "740237f4fe6d1ed8518a55df3282f0438532c0ec1c993c9ea3c7cfb4bc62cf81",
+      "posterSeconds": 0,
+      "webMovie": "media/gustglass/gameplay-en.mp4",
+      "webMovieSHA256": "6d9ee0496754ddf47952649cc47776b9f29519edfdc9e68d856349e6aad86d73",
+      "webPoster": "media/gustglass/poster.jpg",
+      "webPosterSHA256": "c506c8adfba9d571d80002df1abcce7dd44c3a77afa0a498eb3109b81393eb48",
+      "webProvenance": "media/gustglass/provenance.json",
+      "webProvenanceSHA256": "98d8bad6bc2c1d4c02b853e37b03e5a7e264fdd22f3751bf03f8e79bf164dcee"
     }
   },
-  "publicationEnabled": false
+  "publicationEnabled": true
 }

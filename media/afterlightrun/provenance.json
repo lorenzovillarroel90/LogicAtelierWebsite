@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "game": "AfterlightRun",
+  "language": "en",
+  "durationSeconds": 24.0,
+  "dimensions": [
+    886,
+    1920
+  ],
+  "sourceMovieSHA256": "fdf13d62b8f6098e29e17378ead138b5cc78f887c4e19cb76fa2aadffce04fb9",
+  "sourceReportSHA256": "86e41f5536927b9da961d33c836193f49d5010284969bc03e3c740db3cee90b8",
+  "sourceKind": "offline gameplay composited into observed real native screenshots",
+  "deviceCaptured": false,
+  "audio": "silent stereo track",
+  "purchaseDisclosure": "Additional content requires / one-time Full Game purchase",
+  "derivation": "stream-copy MP4 remux with faststart; JPEG poster from one real selected movie frame",
+  "posterSeconds": 0,
+  "posterFrameIndex": 0,
+  "movieSHA256": "117c5e62102bb741869ced5f1341aa58e08dd8c260f97d6b67882d6a57d5e829",
+  "posterSHA256": "b2cbdfec0dab3b31ee4986fe13b537467058bbeb19b5a9182dd401f989bcef36",
+  "completeDecodePassed": true
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "videos": {
+    "Mothline": {
+      "movie": "Mothline/Mothline-Console-Review-24s.mp4",
+      "report": "Mothline/Mothline-Console-Review-24s.json",
+      "movieSHA256": "c50ab20e49ee6b25ab0c1466d440309528745a66a24d8bc1f801a720128a2f4c",
+      "reportSHA256": "6c2ed78cd64aff68a9d42f10ad80829df6b39bd4eda972c31f826921bc45411d",
+      "webMovie": "media/mothline/gameplay-en.mp4",
+      "webMovieSHA256": "b1098af1af97a9ef27325a7bc16c4407a305943716b674d19aa8dfc96c7ed6f1",
+      "webPoster": "media/mothline/poster.jpg",
+      "webPosterSHA256": "acbcdf8711a5367c52e58335af945602dad6bd713f0f2aff6f393865e091a093",
+      "webProvenance": "media/mothline/provenance.json",
+      "webProvenanceSHA256": "be84f39d46072897c42c0b243fc95643bfa17fa99316d3bbe9be3c1e054aabeb"
+    },
+    "Spindlewatch": {
+      "movie": "Spindlewatch/Spindlewatch-Console-Review-24s.mp4",
+      "report": "Spindlewatch/Spindlewatch-Console-Review-24s.json",
+      "movieSHA256": "af77d3f9db265b7c5a50a5ce448f34965cc6381810b8c30bb0fdebd72bf6d52e",
+      "reportSHA256": "3abf9267035f528d5357410da186e63ae257e973ed0152a735f02e07403ef930",
+      "webMovie": "media/spindlewatch/gameplay-en.mp4",
+      "webMovieSHA256": "60d84ebcc6199a86e91fb60ac23f8e65b48758b83770ccca15bf72a0b16dec63",
+      "webPoster": "media/spindlewatch/poster.jpg",
+      "webPosterSHA256": "744f3b3ee5cc180e87bf062ca21402c66944fbf0575bad5afd1f4e71bfade107",
+      "webProvenance": "media/spindlewatch/provenance.json",
+      "webProvenanceSHA256": "a0b9660b2b778bdf1ccffb23ec0dc765c324757738b2467a1f22118e2f1dd24a"
+    }
+  },
+  "publicationEnabled": false
+}

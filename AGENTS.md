@@ -20,6 +20,13 @@ editing it.
   shots.
 - LogicAtelier icons come from their project asset catalogs. PocketColor icons
   come from `../ios/PocketColor/ios-projects/<Brand>/App/Assets.xcassets/`.
+- Approved English videos use the hash-pinned `approved-videos.json` owner and
+  durable `media/` sources. Read [the import/policy workflow](README.md#approved-english-gameplay-media).
+  Original deliveries/traces remain external; only approved web movie/poster
+  derivatives and safe provenance are allowed as Website product artifacts.
+  Normal builds never depend on temporary delivery files or FFmpeg.
+- Public support/contact: read [the standing shared contact owner](SUPPORT.md);
+  every PocketColor game reuses Reedwake’s approved public channel by default.
 - Run `python3 build.py` to regenerate deployable output after source changes.
 
 ## Public content

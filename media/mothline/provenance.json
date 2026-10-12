@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "game": "Mothline",
+  "language": "en",
+  "durationSeconds": 24.0,
+  "dimensions": [
+    886,
+    1920
+  ],
+  "sourceMovieSHA256": "c50ab20e49ee6b25ab0c1466d440309528745a66a24d8bc1f801a720128a2f4c",
+  "sourceReportSHA256": "6c2ed78cd64aff68a9d42f10ad80829df6b39bd4eda972c31f826921bc45411d",
+  "sourceKind": "offline gameplay composited into observed real native screenshots",
+  "deviceCaptured": false,
+  "audio": "bundled music paired offline; native sound effects not captured",
+  "purchaseDisclosure": "Additional content requires / one-time Full Game purchase",
+  "derivation": "stream-copy MP4 remux with faststart; first decoded frame JPEG poster",
+  "movieSHA256": "b1098af1af97a9ef27325a7bc16c4407a305943716b674d19aa8dfc96c7ed6f1",
+  "posterSHA256": "acbcdf8711a5367c52e58335af945602dad6bd713f0f2aff6f393865e091a093",
+  "completeDecodePassed": true
+}

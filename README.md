@@ -40,7 +40,7 @@ screenshots for each puzzle app, approved six-shot PocketColor matrices, and the
 matching app icons. Product/help/privacy routes can be published before new game
 media is approved: these pages show their real icon and approved localized copy,
 without an empty gallery, screenshot promise or placeholder. `APPROVED_POCKET_MEDIA`
-is the explicit reviewed-matrix owner; only Reedwake is enabled initially. Add a
+is the explicit reviewed-matrix owner; Only Reedwake remains enabled while revised paid-content disclosure products for the six other games await renewed lead review. Add a
 game there after lead approval of all six shots in all five languages. Missing or
 empty approved sources still fail before replacing `site/`. Run
 `python3 Website/build.py --require-all-media` for the separate final all-game media
@@ -88,3 +88,53 @@ python3 -m http.server 4173 --directory .preview
 Open `http://localhost:4173/LogicAtelierWebsite/`, an app page, and a
 non-English privacy route. Remove `.preview/` after the check. Keep
 `prefers-reduced-motion: reduce` enabled when checking the reduced-motion path.
+
+## Approved English gameplay media
+
+`approved-videos.json` is the single hash-pinned video owner. One English edit is
+shared across all five languages with localized “English gameplay” labels, native
+HTML controls, a real frame-zero poster, `preload="metadata"`, and no autoplay.
+Only movies explicitly accepted by the lead may enter that map. Gallery acceptance
+is independent; adding a video never approves screenshots or App Store availability.
+
+Original delivery MP4s, detailed sidecars, traces and QA images remain outside the
+parent repository, following its video workflow. A narrow authorized exception
+allows lead-approved, Website-owned web movie/poster derivatives and sanitized
+provenance as public product artifacts in this separate Website repository. These
+are durable inputs under `media/<game>/`, copied into `site/assets/videos/<game>/`.
+Do not copy original traces, absolute private paths or contact sheets into either
+owner. Provenance truthfully identifies the offline/native-shell composite, paired
+music or silence, paid-content disclosure, accepted source hashes and derivative
+hashes; it never calls this device-captured footage or App Store submission-ready.
+
+Import an accepted delivery once with an existing FFmpeg executable:
+
+```sh
+python3 Website/build.py --import-approved-videos \
+  --video-source-root /absolute/external/delivery-root \
+  --ffmpeg /absolute/existing/ffmpeg
+python3 Website/build.py
+```
+
+The explicit import verifies each new or changed external movie/report against
+the reviewed hashes before replacing owned inputs. Already valid durable movies
+are retained, so importing a later game never requires prior temporary deliveries. It stream-copies the accepted picture/audio
+into a faststart MP4, extracts the first decoded frame as a JPEG poster, checks full
+decoding, and records safe source/derivative provenance. It does not publish or
+replace `site/`. Regular builds need neither FFmpeg nor the original delivery
+folders; they verify every durable input hash before staging. Changed or missing
+approved originals during import, or changed/missing owned media during an ordinary
+build, fail before replacing the deployable artifact. Adding later movies uses this
+same owner and concrete lead review, followed by the authorized deployment workflow.
+
+## Shared public support
+
+[SUPPORT.md](SUPPORT.md) records the owner’s standing Reedwake contact choice for
+all seven PocketColor games. The existing public repository issue-reporting link
+is exposed on every localized game support and privacy page. Never ask the owner
+for that default again, invent an email or publish private App Review contacts.
+
+`approved-videos.json` can explicitly set `publicationEnabled: false` for a lead
+media hold. Durable movie/poster/provenance inputs remain intact, while generation
+omits all candidate movie references. Re-enable only after the concrete media
+review; new galleries likewise require revised, approved product PNGs.

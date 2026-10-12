@@ -8,6 +8,7 @@ macOS (where sips is available) after changing approved metadata or screenshots.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import html
 import json
 import os
@@ -31,6 +32,8 @@ POCKET_BRANDS = ["Reedwake", "AfterlightRun", "Mothline", "Brassbird", "Hushshor
 POCKET_SLUGS = [brand.lower() for brand in POCKET_BRANDS]
 # Lead-approved complete five-language storefront matrices only. Add a game
 # after its product media review; source file presence does not imply approval.
+# New game galleries remain held until revised purchase-disclosure products
+# receive complete localized lead acceptance. Preserve Reedwake’s active media.
 APPROVED_POCKET_MEDIA = {"Reedwake"}
 PUZZLE_SCREENSHOT_FILES = ("01_core", "02_depth", "03_solved", "04_home")
 POCKET_SCREENSHOT_FILES = ("01_core", "02_world", "03_world", "04_depth", "05_solved", "06_home")
@@ -287,6 +290,49 @@ POCKET_SHARED = {
 }
 
 
+# Standing PocketColor default approved by the owner; see SUPPORT.md.
+PUBLIC_SUPPORT_URL = "https://github.com/lorenzovillarroel90/LogicAtelierWebsite/issues/new"
+SUPPORT_TEXT = {
+    "en": {"title": "Contact support", "copy": "Ask a question or report a problem. Include the game name, your device and what happened.", "action": "Contact us on GitHub", "channel": "Reports are public and require a GitHub account."},
+    "es": {"title": "Contactar con soporte", "copy": "Haz una pregunta o comunica un problema. Incluye el nombre del juego, tu dispositivo y qué ocurrió.", "action": "Contacta con nosotros en GitHub", "channel": "Los informes son públicos y requieren una cuenta de GitHub."},
+    "fr": {"title": "Contacter l’assistance", "copy": "Posez une question ou signalez un problème. Indiquez le nom du jeu, votre appareil et ce qui s’est passé.", "action": "Contactez-nous sur GitHub", "channel": "Les signalements sont publics et nécessitent un compte GitHub."},
+    "de": {"title": "Support kontaktieren", "copy": "Stelle eine Frage oder melde ein Problem. Nenne das Spiel, dein Gerät und was passiert ist.", "action": "Kontaktiere uns auf GitHub", "channel": "Meldungen sind öffentlich und erfordern ein GitHub-Konto."},
+    "it": {"title": "Contatta l’assistenza", "copy": "Fai una domanda o segnala un problema. Indica il nome del gioco, il dispositivo e cosa è successo.", "action": "Contattaci su GitHub", "channel": "Le segnalazioni sono pubbliche e richiedono un account GitHub."},
+}
+
+
+def public_support_contact(lang: str) -> str:
+    text = SUPPORT_TEXT[lang]
+    return f'''<div class="support-contact"><h3>{esc(text["title"])}</h3><p>{esc(text["copy"])}</p><a class="button button-primary" href="{esc(PUBLIC_SUPPORT_URL)}" rel="noopener">{esc(text["action"])}</a><p>{esc(text["channel"])}</p></div>'''
+
+
+VIDEO_TEXT = {
+    "en": {"title": "English gameplay", "label": "{name} · English gameplay video", "copy": "A 24-second gameplay video in English. Additional content requires a one-time Full Game purchase.", "fallback": "Download the English gameplay video"},
+    "es": {"title": "Vídeo de juego en inglés", "label": "{name} · vídeo de juego en inglés", "copy": "Un vídeo de juego de 24 segundos en inglés. El contenido adicional requiere una compra única del juego completo.", "fallback": "Descargar el vídeo de juego en inglés"},
+    "fr": {"title": "Vidéo de jeu en anglais", "label": "{name} · vidéo de jeu en anglais", "copy": "Une vidéo de jeu de 24 secondes en anglais. Le contenu supplémentaire nécessite un achat unique du jeu complet.", "fallback": "Télécharger la vidéo de jeu en anglais"},
+    "de": {"title": "Spielvideo auf Englisch", "label": "{name} · Spielvideo auf Englisch", "copy": "Ein 24-sekündiges Spielvideo auf Englisch. Zusätzliche Inhalte erfordern einen einmaligen Vollspielkauf.", "fallback": "Spielvideo auf Englisch herunterladen"},
+    "it": {"title": "Video di gioco in inglese", "label": "{name} · video di gioco in inglese", "copy": "Un video di gioco di 24 secondi in inglese. I contenuti aggiuntivi richiedono un acquisto unico del gioco completo.", "fallback": "Scarica il video di gioco in inglese"},
+}
+
+
+def approved_videos() -> dict[str, dict]:
+    """One explicit, hash-pinned source owner for lead-approved English movies."""
+    manifest = json.loads(read_text(WEBSITE / "approved-videos.json"))
+    if manifest["schemaVersion"] != 1:
+        raise ValueError("Unsupported approved video manifest version.")
+    # A lead hold removes all candidate movies from generated/public pages.
+    # Durable accepted sources stay intact for the subsequent media review.
+    videos = manifest["videos"] if manifest.get("publicationEnabled", True) else {}
+    if set(videos) - set(POCKET_BRANDS):
+        raise ValueError("Approved video manifest names an unknown game.")
+    for video in videos.values():
+        for key in ("movie", "report"):
+            path = Path(video[key])
+            if path.is_absolute() or ".." in path.parts:
+                raise ValueError("Approved video sources must stay relative to the external source root.")
+    return videos
+
+
 def public_name(app: dict, lang: str) -> str:
     """Use approved localized game names; routing identities stay internal."""
     return app["name"][lang] if app.get("family") == "pocketcolor" else app["brand"]
@@ -340,6 +386,7 @@ def load_apps() -> dict[str, dict]:
 def load_pocket_games(source_root: Path = ROOT) -> dict[str, dict]:
     """Load optional PocketColor products from the same approved metadata matrix."""
     apps: dict[str, dict] = {}
+    videos = approved_videos()
     for brand, slug in zip(POCKET_BRANDS, POCKET_SLUGS):
         source = source_root / "AppStoreMetaData" / brand / "v1.0"
         if not source.is_dir():
@@ -355,6 +402,7 @@ def load_pocket_games(source_root: Path = ROOT) -> dict[str, dict]:
             "headlines": {lang: json.loads(read_text(source / "screenshot-headlines" / f"{lang}.json"))["screenshots"] for lang in LANGS},
             "screenshot_files": POCKET_SCREENSHOT_FILES if brand in APPROVED_POCKET_MEDIA else (),
             "theme": {"accent": "#D7D998", "companion": "#7ABC86", "wash": "#EFF6E4", "ink": "#28413C"},
+            "video": videos.get(brand),
             "website": {lang: json.loads(read_text(source / "website-content" / f"{lang}.json")) for lang in LANGS} if brand != "Reedwake" else None,
             # A verified record ID never establishes public availability.
             "store_live": False,
@@ -628,6 +676,17 @@ def metadata_description(description: str) -> str:
     return "".join(blocks)
 
 
+def gameplay_video(current: Path, lang: str, slug: str, app: dict) -> str:
+    if not app.get("video"):
+        return ""
+    v = VIDEO_TEXT[lang]
+    root = SITE / "assets" / "videos" / slug
+    movie = esc(rel_href(current, root / "gameplay-en.mp4"))
+    poster = esc(rel_href(current, root / "poster.jpg"))
+    label = esc(v["label"].format(name=app["name"][lang]))
+    return f'''<section class="section gameplay-section" aria-labelledby="gameplay-title"><div class="section-heading"><h2 id="gameplay-title">{esc(v["title"])}</h2><p id="gameplay-description">{esc(v["copy"])}</p></div><video class="gameplay-video" controls playsinline preload="metadata" poster="{poster}" width="886" height="1920" aria-label="{label}" aria-describedby="gameplay-description"><source src="{movie}" type="video/mp4"><a href="{movie}">{esc(v["fallback"])}</a></video></section>'''
+
+
 def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> None:
     current = SITE / route_file(lang, slug)
     c = COMMON[lang]
@@ -680,7 +739,8 @@ def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> 
 <section class="section soft-section" aria-labelledby="free-title"><div class="pro-panel"><div><p class="eyebrow">{esc(p["free_title"])}</p><h2 id="free-title">{esc(free_copy)}</h2><p>{esc(p["free_replay"])}</p></div><div class="pro-card"><span>{esc(p["full_title"])}</span><p>{esc(full_copy)}</p><p>{esc(p["one_time"])}</p><p>{esc(p["price"])}</p></div></div></section>
 <section class="section" aria-labelledby="story-copy-title"><div class="section-heading"><div><p class="eyebrow">{esc(public_name(app, lang))}</p><h2 id="story-copy-title">{esc(app["subtitle"][lang])}</h2></div></div><div class="store-copy">{metadata_description(app["description"][lang])}</div></section>
 {gallery_html}
-<section class="section" id="support" aria-labelledby="support-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["faq_label"])}</p><h2 id="support-title">{esc(p["faq_title"])}</h2></div><p>{esc(p["support_intro"])}</p></div><div class="support-list">{faq_html}</div></section>'''
+{gameplay_video(current, lang, slug, app)}
+<section class="section" id="support" aria-labelledby="support-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["faq_label"])}</p><h2 id="support-title">{esc(p["faq_title"])}</h2></div><p>{esc(p["support_intro"])}</p></div><div class="support-list">{faq_html}</div>{public_support_contact(lang)}</section>'''
     jsonld = {"@context": "https://schema.org", "@type": "SoftwareApplication", "name": name, "applicationCategory": "VideoGame", "operatingSystem": "iOS", "description": description, "image": og, "url": public_route(lang, slug), "inLanguage": lang}
     if app["store_live"] and app["store_url"]:
         jsonld["downloadUrl"] = app["store_url"]
@@ -705,7 +765,7 @@ def build_pocket_privacy(lang: str, slug: str, app: dict, apps: dict[str, dict])
     ]
     body = "".join(f'<section class="policy-section" id="{key}"><h2>{esc(heading)}</h2><p>{esc(text)}</p></section>' for key, heading, text in policies)
     support_href = rel_href(current, SITE / route_file(lang, slug)) + "#support"
-    content = f'''<section class="page-hero"><div class="narrow"><p class="eyebrow">{esc(c["privacy_eyebrow"])}</p><h1>{esc(title)}</h1><p class="lede">{esc(p["privacy_intro"])}</p><p class="updated">{esc(p["privacy_updated"])}</p></div></section><section class="section policy-wrap"><div class="policy-summary"><div><strong>{esc(p["privacy_device"])}</strong><span>{esc(p["privacy_device_copy"])}</span></div><div><strong>{esc(p["privacy_account"])}</strong><span>{esc(p["privacy_account_copy"])}</span></div><div><strong>{esc(p["privacy_services"])}</strong><span>{esc(p["privacy_services_copy"])}</span></div></div><div class="policy-layout"><aside class="policy-nav"><strong>{esc(c["privacy"])}</strong>{"".join(f'<a href="#{key}">{esc(heading)}</a>' for key, heading, _ in policies)}<a href="{esc(support_href)}">{esc(p["support_nav"])}</a></aside><div>{body}<section class="policy-section" id="support"><h2>{esc(p["support_nav"])}</h2><p>{esc(p["privacy_contact"])}</p><a href="{esc(support_href)}">{esc(p["privacy_back"])}</a></section></div></div></section>'''
+    content = f'''<section class="page-hero"><div class="narrow"><p class="eyebrow">{esc(c["privacy_eyebrow"])}</p><h1>{esc(title)}</h1><p class="lede">{esc(p["privacy_intro"])}</p><p class="updated">{esc(p["privacy_updated"])}</p></div></section><section class="section policy-wrap"><div class="policy-summary"><div><strong>{esc(p["privacy_device"])}</strong><span>{esc(p["privacy_device_copy"])}</span></div><div><strong>{esc(p["privacy_account"])}</strong><span>{esc(p["privacy_account_copy"])}</span></div><div><strong>{esc(p["privacy_services"])}</strong><span>{esc(p["privacy_services_copy"])}</span></div></div><div class="policy-layout"><aside class="policy-nav"><strong>{esc(c["privacy"])}</strong>{"".join(f'<a href="#{key}">{esc(heading)}</a>' for key, heading, _ in policies)}<a href="{esc(support_href)}">{esc(p["support_nav"])}</a></aside><div>{body}<section class="policy-section" id="support"><h2>{esc(p["support_nav"])}</h2><p>{esc(p["privacy_contact"])}</p><a href="{esc(support_href)}">{esc(p["privacy_back"])}</a>{public_support_contact(lang)}</section></div></div></section>'''
     current.parent.mkdir(parents=True, exist_ok=True)
     current.write_text(page_shell(current, lang, title, description, public_route(lang, slug, True), og, name, slug, True, content, apps=apps), encoding="utf-8")
 
@@ -767,6 +827,11 @@ def validate_sources(source_root: Path = ROOT, require_all_media: bool = False) 
         suffix = "\n  ..." if len(missing) > 12 else ""
         raise FileNotFoundError(f"Website source validation failed before staging; missing or empty inputs ({len(missing)}):\n{sample}{suffix}")
 
+    if require_all_media:
+        held = set(POCKET_BRANDS) - APPROVED_POCKET_MEDIA
+        if held:
+            raise ValueError(f"Final all-game media approval remains held for {', '.join(sorted(held))}; file presence alone does not approve a revised gallery.")
+
 
 def convert_image(source: Path, destination: Path, max_width: int | None = None, quality: int = 82) -> None:
     sips = require_sips()
@@ -793,6 +858,119 @@ def copy_assets(apps: dict[str, dict]) -> None:
                 convert_image(source, image_path(slug, lang, filename), 720, 84)
 
 
+def file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def validate_video_sources(source_root: Path | None, ffmpeg: str | None, videos: dict[str, dict] | None = None) -> list[dict]:
+    if videos is None:
+        videos = approved_videos()
+    if not videos:
+        return []
+    if source_root is None or not ffmpeg or not Path(ffmpeg).is_file():
+        raise ValueError("Approved videos require --video-source-root and an existing --ffmpeg executable; site/ was not changed.")
+    validated = []
+    for brand, video in videos.items():
+        source, report_path = source_root / video["movie"], source_root / video["report"]
+        if not source.is_file() or not report_path.is_file():
+            raise FileNotFoundError(f"{brand}: approved external movie/report is absent; site/ was not changed.")
+        if file_sha256(source) != video["movieSHA256"] or file_sha256(report_path) != video["reportSHA256"]:
+            raise ValueError(f"{brand}: approved movie/report hash changed; renewed lead acceptance is required.")
+        report = json.loads(read_text(report_path))
+        if not (report["outputSHA256"] == video["movieSHA256"] and report["language"] == "en" and report["duration"] == 24 and report["dimensions"] == [886, 1920] and report["completeDecodePassed"] and report["deviceCaptured"] is False and report["purchaseDisclosure"]):
+            raise ValueError(f"{brand}: approved video provenance does not match the published format/source.")
+        validated.append({"brand": brand, "source": source, "approval": video, "report": report})
+    return validated
+
+
+def make_video_derivatives(videos: list[dict], ffmpeg: str, output_root: Path) -> None:
+    for video in videos:
+        folder = output_root / video["brand"].lower()
+        folder.mkdir(parents=True, exist_ok=True)
+        movie, poster = folder / "gameplay-en.mp4", folder / "poster.jpg"
+        # Remux only: preserve the accepted encoded video/audio streams, moving
+        # MP4 metadata ahead of media for web playback. Do not reconstruct clips.
+        subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-i", str(video["source"]), "-map", "0:v:0", "-map", "0:a:0", "-c", "copy", "-map_metadata", "-1", "-movflags", "+faststart", str(movie)], check=True)
+        subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-i", str(movie), "-frames:v", "1", "-q:v", "3", str(poster)], check=True)
+        subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-i", str(movie), "-f", "null", "-"], check=True)
+        report = video["report"]
+        provenance = {"schemaVersion": 1, "game": video["brand"], "language": "en", "durationSeconds": report["duration"], "dimensions": report["dimensions"], "sourceMovieSHA256": video["approval"]["movieSHA256"], "sourceReportSHA256": video["approval"]["reportSHA256"], "sourceKind": report["kind"], "deviceCaptured": False, "audio": report["audio"], "purchaseDisclosure": report["purchaseDisclosure"], "derivation": "stream-copy MP4 remux with faststart; first decoded frame JPEG poster", "movieSHA256": file_sha256(movie), "posterSHA256": file_sha256(poster), "completeDecodePassed": True}
+        (folder / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
+
+
+def validate_owned_video(brand: str, video: dict) -> None:
+    for field, filename in (("webMovie", "gameplay-en.mp4"), ("webPoster", "poster.jpg"), ("webProvenance", "provenance.json")):
+        expected = Path("media") / brand.lower() / filename
+        if video.get(field) != expected.as_posix():
+            raise ValueError(f"{brand}: approved web media has not been imported; use the documented explicit import workflow.")
+        source = WEBSITE / expected
+        if not source.is_file() or file_sha256(source) != video[field + "SHA256"]:
+            raise ValueError(f"{brand}: durable approved {field} is absent or changed; site/ was not changed.")
+    provenance = json.loads(read_text(WEBSITE / video["webProvenance"]))
+    if not (provenance["game"] == brand and provenance["language"] == "en" and provenance["sourceMovieSHA256"] == video["movieSHA256"] and provenance["sourceReportSHA256"] == video["reportSHA256"] and provenance["movieSHA256"] == video["webMovieSHA256"] and provenance["posterSHA256"] == video["webPosterSHA256"] and provenance["completeDecodePassed"]):
+        raise ValueError(f"{brand}: web provenance does not match its accepted source.")
+
+
+def validate_owned_videos() -> dict[str, dict]:
+    """Ordinary builds require only the durable, lead-approved Website inputs."""
+    videos = approved_videos()
+    for brand, video in videos.items():
+        validate_owned_video(brand, video)
+    return videos
+
+
+def import_approved_videos(source_root: Path | None, ffmpeg: str | None) -> None:
+    """Import approved web derivatives once; original delivery/proofs stay external."""
+    manifest = json.loads(read_text(WEBSITE / "approved-videos.json"))
+    pending, retained = {}, {}
+    for brand, video in approved_videos().items():
+        try:
+            validate_owned_video(brand, video)
+            retained[brand] = video
+        except (ValueError, KeyError, FileNotFoundError):
+            pending[brand] = video
+    if not pending:
+        return
+    videos = validate_video_sources(source_root, ffmpeg, pending)
+    staging = Path(tempfile.mkdtemp(prefix=".media-import-", dir=WEBSITE))
+    destination = WEBSITE / "media"
+    backup = WEBSITE / f".media-backup-{uuid.uuid4().hex}"
+    try:
+        copy_video_assets(retained, staging)
+        make_video_derivatives(videos, ffmpeg, staging)
+        for brand, video in manifest["videos"].items():
+            for field, filename in (("webMovie", "gameplay-en.mp4"), ("webPoster", "poster.jpg"), ("webProvenance", "provenance.json")):
+                video[field] = (Path("media") / brand.lower() / filename).as_posix()
+                video[field + "SHA256"] = file_sha256(staging / brand.lower() / filename)
+        staged_manifest = WEBSITE / f".approved-videos-{uuid.uuid4().hex}.json"
+        staged_manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        if destination.exists():
+            os.replace(destination, backup)
+        try:
+            os.replace(staging, destination)
+            os.replace(staged_manifest, WEBSITE / "approved-videos.json")
+        except BaseException:
+            shutil.rmtree(destination, ignore_errors=True)
+            if backup.exists():
+                os.replace(backup, destination)
+            raise
+        shutil.rmtree(backup, ignore_errors=True)
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
+        if "staged_manifest" in locals():
+            staged_manifest.unlink(missing_ok=True)
+
+
+def copy_video_assets(videos: dict[str, dict], output_root: Path | None = None) -> None:
+    output_root = output_root if output_root is not None else SITE / "assets" / "videos"
+    for brand, video in videos.items():
+        folder = output_root / brand.lower()
+        folder.mkdir(parents=True, exist_ok=True)
+        for key in ("webMovie", "webPoster", "webProvenance"):
+            source = WEBSITE / video[key]
+            shutil.copyfile(source, folder / source.name)
+
+
 def write_static_files(apps: dict[str, dict]) -> None:
     (SITE / "app-ads.txt").write_text("google.com, pub-8504168355168096, DIRECT, f08c47fec0942fa0\n", encoding="utf-8")
     (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {BASE}sitemap.xml\n", encoding="utf-8")
@@ -809,8 +987,16 @@ def main() -> None:
     deploy_site = SITE
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--require-all-media", action="store_true", help="Validate every game’s complete screenshot matrix before building; approval still controls public galleries.")
+    parser.add_argument("--import-approved-videos", action="store_true", help="Explicitly import hash-pinned external deliveries into durable Website-owned web media; does not publish or build pages.")
+    parser.add_argument("--video-source-root", type=Path, help="External directory containing the hash-pinned approved movie/report paths.")
+    parser.add_argument("--ffmpeg", default=shutil.which("ffmpeg"), help="Existing FFmpeg executable for stream-copy web derivatives and posters.")
     args = parser.parse_args()
+    if args.import_approved_videos:
+        import_approved_videos(args.video_source_root, args.ffmpeg)
+        print("Imported approved durable Website video sources; site/ was not changed.")
+        return
     validate_sources(require_all_media=args.require_all_media)
+    videos = validate_owned_videos()
     apps = {**load_apps(), **load_pocket_games()}
     if not deploy_site.is_dir():
         raise RuntimeError(f"Expected existing deployment directory at {deploy_site}; refusing to replace an unexpected path.")
@@ -819,6 +1005,7 @@ def main() -> None:
     SITE = staging
     try:
         copy_assets(apps)
+        copy_video_assets(videos)
         (SITE / "styles.css").write_text(STYLES, encoding="utf-8")
         (SITE / "script.js").write_text(SCRIPT, encoding="utf-8")
         for lang in LANGS:
@@ -866,7 +1053,7 @@ STYLES = r'''
 @media(max-width:850px){.nav-links{display:none}.nav-menu{display:block}.hero-grid,.app-hero-grid{grid-template-columns:1fr;gap:2rem;min-height:0}.hero-grid,.app-hero-grid{padding-top:5rem;padding-bottom:4rem}.orbit-art,.hero-shot-wrap{min-height:390px}.hero-shot{right:20%;width:min(52%,255px)}.section-heading,.split{grid-template-columns:1fr;gap:1rem}.game-grid{grid-template-columns:repeat(2,1fr)}.shots-grid{grid-template-columns:repeat(2,1fr)}.shot-card:nth-child(even){padding-top:1rem}.policy-layout{grid-template-columns:1fr;gap:1.5rem}.policy-nav{position:static}.privacy-links{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){h1{font-size:clamp(2.7rem,13vw,4.3rem)}h2{font-size:clamp(2rem,10vw,3rem)}.nav{min-height:70px}.hero-grid,.app-hero-grid{padding-top:4.2rem}.game-grid,.value-grid,.privacy-links,.shots-grid,.policy-summary{grid-template-columns:1fr}.orbit-art{min-height:325px}.shape-a{width:90px;height:90px;left:12%}.shape-b{width:110px;height:70px;right:5%}.shape-c{width:83px;height:83px;left:15%}.shape-d{right:15%;width:60px;height:60px}.app-title{align-items:flex-start;gap:.8rem}.app-title img{width:66px;height:66px;border-radius:19px}.app-title h1{font-size:clamp(2.35rem,10vw,3.6rem)}.hero-shot-wrap{min-height:340px}.hero-shot{right:19%;width:min(59%,230px)}.pro-panel{grid-template-columns:1fr}.footer-inner{grid-template-columns:1fr;gap:1.5rem}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-shot,.float-shape,.game-card,.shot-frame,.button{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none;transition:none}.game-card:hover,.shot-card:hover .shot-frame,.button:hover{transform:none}}
-.app-hero-grid.copy-only{grid-template-columns:minmax(0,900px);min-height:0}.pocket-stats{grid-template-columns:repeat(4,1fr)}.store-copy{display:grid;gap:.65rem;max-width:850px}.store-copy p{margin:0;color:var(--muted);font-size:1.05rem}.support-list{display:grid;gap:.75rem;max-width:900px}.support-answer{padding:1.15rem 1.35rem;border:1px solid var(--line);border-radius:18px;background:#fff}.support-answer summary{cursor:pointer;color:var(--brand-ink);font-weight:850}.support-answer>div{padding-top:.85rem;color:var(--muted)}.support-answer p{margin:.7rem 0 0}.support-answer p:first-child{margin-top:0}
+.support-contact{margin-top:2rem;padding:1.5rem;border:1px solid var(--line);border-radius:18px;max-width:900px}.support-contact p{margin:.8rem 0}.support-contact .button{margin:.5rem 0}.gameplay-video{display:block;width:min(100%,420px);height:auto;margin:2rem auto 0;border-radius:24px;background:#10172c;box-shadow:0 20px 50px rgba(15,23,42,.14)}.gameplay-video:focus-visible{outline:3px solid var(--accent);outline-offset:5px}.app-hero-grid.copy-only{grid-template-columns:minmax(0,900px);min-height:0}.pocket-stats{grid-template-columns:repeat(4,1fr)}.store-copy{display:grid;gap:.65rem;max-width:850px}.store-copy p{margin:0;color:var(--muted);font-size:1.05rem}.support-list{display:grid;gap:.75rem;max-width:900px}.support-answer{padding:1.15rem 1.35rem;border:1px solid var(--line);border-radius:18px;background:#fff}.support-answer summary{cursor:pointer;color:var(--brand-ink);font-weight:850}.support-answer>div{padding-top:.85rem;color:var(--muted)}.support-answer p{margin:.7rem 0 0}.support-answer p:first-child{margin-top:0}
 @media(max-width:850px){.pocket-stats{grid-template-columns:repeat(2,1fr)}}
 '''
 

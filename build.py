@@ -32,9 +32,8 @@ POCKET_BRANDS = ["Reedwake", "AfterlightRun", "Mothline", "Brassbird", "Hushshor
 POCKET_SLUGS = [brand.lower() for brand in POCKET_BRANDS]
 # Lead-approved complete five-language storefront matrices only. Add a game
 # after its product media review; source file presence does not imply approval.
-# Lead-approved complete localized matrices. Gustglass remains held until its
-# two Italian home-image retakes receive final acceptance.
-APPROVED_POCKET_MEDIA = {"Reedwake", "AfterlightRun", "Mothline", "Brassbird", "Hushshore", "Spindlewatch"}
+# Lead-approved complete six-shot matrices in all five languages.
+APPROVED_POCKET_MEDIA = {"Reedwake", "AfterlightRun", "Mothline", "Brassbird", "Hushshore", "Gustglass", "Spindlewatch"}
 PUZZLE_SCREENSHOT_FILES = ("01_core", "02_depth", "03_solved", "04_home")
 POCKET_SCREENSHOT_FILES = ("01_core", "02_world", "03_world", "04_depth", "05_solved", "06_home")
 APP_STORE_IDS = {

@@ -40,7 +40,8 @@ screenshots for each puzzle app, approved six-shot PocketColor matrices, and the
 matching app icons. Product/help/privacy routes can be published before new game
 media is approved: these pages show their real icon and approved localized copy,
 without an empty gallery, screenshot promise or placeholder. `APPROVED_POCKET_MEDIA`
-is the explicit reviewed-matrix owner; Reedwake plus the complete revised Afterlight Run, Mothline, Brassbird, Hushshore and Spindlewatch matrices are enabled after lead review. Gustglass remains held until both Italian home-image retakes are accepted. Add a
+is the explicit reviewed-matrix owner; all seven PocketColor games have complete,
+lead-approved six-shot matrices in all five languages. Add a
 game there after lead approval of all six shots in all five languages. Missing or
 empty approved sources still fail before replacing `site/`. Run
 `python3 Website/build.py --require-all-media` for the separate final all-game media

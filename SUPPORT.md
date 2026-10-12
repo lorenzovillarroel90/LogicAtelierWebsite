@@ -3,9 +3,11 @@
 ## Standing owner decision
 
 All seven PocketColor games reuse Reedwake’s canonical **public support contact**
-by default. The owner explicitly requested the same contact on 2026-10-12 and
-approved the existing public issue-reporting channel. Do not ask for a support
-contact again unless the owner specifically requests a change. Never invent an
+by default. The owner requested the same public contact as Reedwake on
+2026-10-12. Because the previous Reedwake page had FAQs only, the lead selected
+and verified the existing owner-controlled repository’s public issue-reporting
+channel. This does not imply that the human directly chose GitHub. Do not ask
+for a support contact again unless the owner specifically requests a change. Never invent an
 email address or publish private App Review contacts or `.env` values.
 
 - Canonical shared support landing: https://lorenzovillarroel90.github.io/LogicAtelierWebsite/reedwake/#support

@@ -7,6 +7,7 @@ macOS (where sips is available) after changing approved metadata or screenshots.
 
 from __future__ import annotations
 
+import argparse
 import html
 import json
 import os
@@ -26,8 +27,11 @@ LANGS = ["en", "es", "fr", "it", "de"]
 NON_EN = ["es", "fr", "it", "de"]
 BRANDS = ["Evenbeam", "Knotide", "Pipebloom", "Rayfold", "Laneweave", "Shaplet", "Driftlings", "Overprint", "Rollmark", "Sproutbound"]
 SLUGS = [b.lower() for b in BRANDS]
-POCKET_BRANDS = ["Reedwake"]
+POCKET_BRANDS = ["Reedwake", "AfterlightRun", "Mothline", "Brassbird", "Hushshore", "Gustglass", "Spindlewatch"]
 POCKET_SLUGS = [brand.lower() for brand in POCKET_BRANDS]
+# Lead-approved complete five-language storefront matrices only. Add a game
+# after its product media review; source file presence does not imply approval.
+APPROVED_POCKET_MEDIA = {"Reedwake"}
 PUZZLE_SCREENSHOT_FILES = ("01_core", "02_depth", "03_solved", "04_home")
 POCKET_SCREENSHOT_FILES = ("01_core", "02_world", "03_world", "04_depth", "05_solved", "06_home")
 APP_STORE_IDS = {
@@ -38,6 +42,12 @@ APP_STORE_IDS = {
     "laneweave": "6812991110",
     "evenbeam": "6812989398",
     "reedwake": "6819999218",
+    "afterlightrun": "6819997915",
+    "mothline": "6820000608",
+    "brassbird": "6820001790",
+    "hushshore": "6820003410",
+    "gustglass": "6821880430",
+    "spindlewatch": "6821881825",
 }
 STORE_LABELS = {
     "en": "Open on the App Store",
@@ -266,6 +276,36 @@ POCKET_TEXT = {
 }
 
 
+# Shared website language describes only common verified product behavior.
+# Game-specific promises and controls remain in each metadata/website-content owner.
+POCKET_SHARED = {
+    "en": {"journey_label": "Pixel adventures", "journey_title": "A journey made for this game", "discover_title": "Seven pixel adventures to explore", "discover_copy": "Platform journeys, paired puzzles, shadow heists, a coast of memories, wind flights and a walking hearth. Each adventure begins with a free opening and offers one permanent full-game unlock.", "screens_intro": "Six native views show the core idea, two other worlds, deeper play, the journey’s rewards and its home or atlas.", "full_title": "Unlock the complete journey", "free_title": "Begin with the free opening", "controls_q": "How do I play?", "footer": "An authored pixel adventure with a free opening and one permanent full-game purchase.", "purchase_body": "Apple and StoreKit process the optional non-consumable full-game purchase. The app receives verified entitlement status; it does not receive or store payment-card details. The price appears in the purchase sheet before confirmation.", "privacy_updated": "Last updated: October 12, 2026"},
+    "es": {"journey_label": "Aventuras píxel", "journey_title": "Un viaje propio de este juego", "discover_title": "Siete aventuras píxel por explorar", "discover_copy": "Plataformas, puzles en pareja, golpes de sombras, una costa de recuerdos, vuelos de viento y un hogar caminante. Cada aventura incluye un inicio gratuito y una compra permanente del juego completo.", "screens_intro": "Seis vistas nativas muestran la idea principal, otros dos mundos, mayor profundidad, las recompensas del viaje y su inicio o atlas.", "full_title": "Desbloquea el viaje completo", "free_title": "Empieza con el inicio gratuito", "controls_q": "¿Cómo se juega?", "footer": "Una aventura píxel diseñada con un inicio gratuito y una compra permanente del juego completo.", "purchase_body": "Apple y StoreKit gestionan la compra opcional no consumible del juego completo. La app recibe el estado de autorización verificado; no recibe ni guarda datos de tarjeta. El precio aparece en la pantalla de compra antes de confirmar.", "privacy_updated": "Última actualización: 12 de octubre de 2026"},
+    "fr": {"journey_label": "Aventures en pixel art", "journey_title": "Un voyage propre à ce jeu", "discover_title": "Sept aventures en pixel art à explorer", "discover_copy": "Plateformes, puzzles en duo, casses d’ombre, côte de souvenirs, vols au vent et foyer ambulant. Chaque aventure propose un début gratuit et un achat permanent du jeu complet.", "screens_intro": "Six vues natives montrent l’idée principale, deux autres mondes, plus de profondeur, les récompenses du voyage et son accueil ou atlas.", "full_title": "Débloquez le voyage complet", "free_title": "Commencez gratuitement", "controls_q": "Comment jouer ?", "footer": "Une aventure en pixel art conçue avec un début gratuit et un achat permanent du jeu complet.", "purchase_body": "Apple et StoreKit gèrent l’achat facultatif non consommable du jeu complet. L’app reçoit l’état d’autorisation vérifié ; elle ne reçoit ni ne conserve les données de carte. Le prix apparaît avant confirmation dans la fenêtre d’achat.", "privacy_updated": "Dernière mise à jour : 12 octobre 2026"},
+    "de": {"journey_label": "Pixelabenteuer", "journey_title": "Eine eigene Reise für dieses Spiel", "discover_title": "Sieben Pixelabenteuer zum Entdecken", "discover_copy": "Plattformreisen, Rätsel zu zweit, Schatten-Coups, eine Erinnerungsküste, Windflüge und eine wandernde Feuerstelle. Jedes Abenteuer bietet einen kostenlosen Einstieg und einen dauerhaften Vollspielkauf.", "screens_intro": "Sechs native Ansichten zeigen die Spielidee, zwei weitere Welten, tieferes Spiel, Reisebelohnungen und das Titelmenü oder den Atlas.", "full_title": "Schalte die ganze Reise frei", "free_title": "Beginne mit dem kostenlosen Einstieg", "controls_q": "Wie spiele ich?", "footer": "Ein gestaltetes Pixelabenteuer mit kostenlosem Einstieg und einem dauerhaften Vollspielkauf.", "purchase_body": "Apple und StoreKit verarbeiten den optionalen, nicht verbrauchbaren Vollspielkauf. Die App erhält den verifizierten Berechtigungsstatus, aber keine Zahlungskartendaten. Der Preis erscheint vor der Bestätigung im Kaufdialog.", "privacy_updated": "Zuletzt aktualisiert: 12. Oktober 2026"},
+    "it": {"journey_label": "Avventure in pixel art", "journey_title": "Un viaggio proprio di questo gioco", "discover_title": "Sette avventure in pixel art da esplorare", "discover_copy": "Piattaforme, puzzle in coppia, colpi d’ombra, una costa di ricordi, voli nel vento e un focolare in cammino. Ogni avventura offre un inizio gratuito e un acquisto permanente del gioco completo.", "screens_intro": "Sei viste native mostrano l’idea principale, altri due mondi, maggiore profondità, le ricompense del viaggio e il titolo o l’atlante.", "full_title": "Sblocca il viaggio completo", "free_title": "Comincia con l’inizio gratuito", "controls_q": "Come si gioca?", "footer": "Un’avventura in pixel art progettata con un inizio gratuito e un acquisto permanente del gioco completo.", "purchase_body": "Apple e StoreKit gestiscono l’acquisto facoltativo non consumabile del gioco completo. L’app riceve lo stato verificato dell’autorizzazione, ma non riceve né conserva i dati della carta. Il prezzo appare nella schermata d’acquisto prima della conferma.", "privacy_updated": "Ultimo aggiornamento: 12 ottobre 2026"},
+}
+
+
+def public_name(app: dict, lang: str) -> str:
+    """Use approved localized game names; routing identities stay internal."""
+    return app["name"][lang] if app.get("family") == "pocketcolor" else app["brand"]
+
+
+def pocket_text(app: dict, lang: str) -> dict:
+    """Keep Reedwake’s approved copy; replace shared facts for each new owner."""
+    if app["brand"] == "Reedwake":
+        return POCKET_TEXT[lang]
+    text = {key: value.replace("Reedwake", public_name(app, lang)) for key, value in POCKET_TEXT[lang].items()}
+    text.update(POCKET_SHARED[lang])
+    product = app["website"][lang]
+    text.update({"free_replay": product["free"], "controls_a": product["controls"], "save_a": product["save"], "app_body": product["save"], "price": ""})
+    if "privacy_device" in product:
+        text.update({"privacy_device": product["privacy_device"], "app_body": product["save"], "deletion_body": product["save"]})
+        text["privacy_intro"] = f'{app["name"][lang]} · {product["privacy_device"]}. {text["services_body"]}'
+    return text
+
+
 def esc(value: str) -> str:
     return html.escape(value, quote=True)
 
@@ -313,9 +353,10 @@ def load_pocket_games(source_root: Path = ROOT) -> dict[str, dict]:
             "promo": {lang: read_text(source / "promotional-text" / f"{lang}.txt") for lang in LANGS},
             "description": {lang: read_text(source / "app-description" / f"{lang}.txt") for lang in LANGS},
             "headlines": {lang: json.loads(read_text(source / "screenshot-headlines" / f"{lang}.json"))["screenshots"] for lang in LANGS},
-            "screenshot_files": POCKET_SCREENSHOT_FILES,
+            "screenshot_files": POCKET_SCREENSHOT_FILES if brand in APPROVED_POCKET_MEDIA else (),
             "theme": {"accent": "#D7D998", "companion": "#7ABC86", "wash": "#EFF6E4", "ink": "#28413C"},
-            # The app record is verified, but its listing is not yet public.
+            "website": {lang: json.loads(read_text(source / "website-content" / f"{lang}.json")) for lang in LANGS} if brand != "Reedwake" else None,
+            # A verified record ID never establishes public availability.
             "store_live": False,
             "store_id": store_id,
             "store_url": f"https://apps.apple.com/app/id{store_id}" if store_id else None,
@@ -325,7 +366,12 @@ def load_pocket_games(source_root: Path = ROOT) -> dict[str, dict]:
 
 def app_icon_source(source_root: Path, app: dict) -> Path:
     if app.get("family") == "pocketcolor":
-        return source_root / "ios" / "PocketColor" / "ios-projects" / app["brand"] / "App" / "Assets.xcassets" / "AppIcon.appiconset" / f'{app["brand"]}-AppIcon.png'
+        catalog = source_root / "ios" / "PocketColor" / "ios-projects" / app["brand"] / "App" / "Assets.xcassets" / "AppIcon.appiconset"
+        images = json.loads(read_text(catalog / "Contents.json"))["images"]
+        filenames = {image["filename"] for image in images if image.get("filename") and image.get("size") == "1024x1024"}
+        if len(filenames) != 1:
+            raise ValueError(f"{catalog}: expected one authoritative 1024px app icon; found {filenames}.")
+        return catalog / next(iter(filenames))
     return source_root / "ios" / "LogicAtelier" / "ios-projects" / app["brand"] / app["brand"] / "Assets.xcassets" / "AppIcon.appiconset" / "AppIcon.png"
 
 
@@ -399,7 +445,7 @@ def make_header(current: Path, lang: str, slug: str | None, privacy: bool, apps:
     home = route_file(lang)
     game_home = route_file(lang, slug) if slug else home
     privacy_target = route_file(lang, slug, True) if slug else None
-    nav_game = f'<a href="{esc(rel_href(current, SITE / game_home))}">{esc(c["all_games"] if not slug else apps[slug]["brand"])}</a>'
+    nav_game = f'<a href="{esc(rel_href(current, SITE / game_home))}">{esc(c["all_games"] if not slug else public_name(apps[slug], lang))}</a>'
     nav_privacy = f'<a href="{esc(rel_href(current, SITE / privacy_target))}">{esc(c["privacy"])}</a>' if privacy_target else f'<a href="#privacy-pages">{esc(c["privacy"])}</a>'
     nav_support = ""
     if slug and apps[slug].get("family") == "pocketcolor":
@@ -422,7 +468,7 @@ def make_header(current: Path, lang: str, slug: str | None, privacy: bool, apps:
 
 def make_footer(current: Path, lang: str, slug: str | None, apps: dict[str, dict]) -> str:
     c = COMMON[lang]
-    footer_note = POCKET_TEXT[lang]["footer"] if slug and apps[slug].get("family") == "pocketcolor" else c["footer_note"]
+    footer_note = pocket_text(apps[slug], lang)["footer"] if slug and apps[slug].get("family") == "pocketcolor" else c["footer_note"]
     links = [f'<a href="{esc(rel_href(current, SITE / route_file(lang))) }">{esc(c["all_games"])}</a>']
     if slug:
         links.append(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug, True)))}">{esc(c["privacy"])}</a>')
@@ -467,7 +513,7 @@ def app_card(current: Path, lang: str, app: dict, slug: str) -> str:
     icon = SITE / "assets" / "icons" / f"{slug}.png"
     theme = app["theme"]
     return f'''<article class="game-card" style="--accent:{theme["accent"]};--companion:{theme["companion"]};--wash:{theme["wash"]}">
-  <a class="game-card-link" href="{esc(rel_href(current, route))}"><img src="{esc(rel_href(current, icon))}" width="96" height="96" loading="lazy" alt="{esc(f'{app["name"][lang]} app icon')}"><span class="game-card-copy"><strong>{esc(app["brand"])}</strong><span>{esc(app["subtitle"][lang])}</span><em>{esc(c["explore"])} <span aria-hidden="true">↗</span></em></span></a>
+  <a class="game-card-link" href="{esc(rel_href(current, route))}"><img src="{esc(rel_href(current, icon))}" width="96" height="96" loading="lazy" alt="{esc(f'{app["name"][lang]} app icon')}"><span class="game-card-copy"><strong>{esc(public_name(app, lang))}</strong><span>{esc(app["subtitle"][lang])}</span><em>{esc(c["explore"])} <span aria-hidden="true">↗</span></em></span></a>
 </article>'''
 
 
@@ -478,13 +524,14 @@ def build_hub(lang: str, apps: dict[str, dict]) -> None:
     description = c["hub_lede"]
     og = BASE + "assets/icons/evenbeam.png"
     cards = "".join(app_card(current, lang, apps[slug], slug) for slug in SLUGS)
-    privacy_links = "".join(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug, True)))}">{esc(apps[slug]["brand"])} · {esc(c["privacy"])}</a>' for slug in SLUGS)
+    privacy_links = "".join(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug, True)))}">{esc(public_name(apps[slug], lang))} · {esc(c["privacy"])}</a>' for slug in SLUGS)
     pocket_section = ""
-    if "reedwake" in apps:
-        pocket = apps["reedwake"]
-        p = POCKET_TEXT[lang]
-        pocket_section = f'''<section class="section" aria-labelledby="pocket-games-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["journey_label"])}</p><h2 id="pocket-games-title">{esc(p["discover_title"])}</h2></div><p>{esc(p["discover_copy"])}</p></div><div class="game-grid">{app_card(current, lang, pocket, "reedwake")}</div></section>'''
-        privacy_links += f'<a href="{esc(rel_href(current, SITE / route_file(lang, "reedwake", True)))}">Reedwake · {esc(c["privacy"])}</a>'
+    pocket_slugs = [slug for slug in POCKET_SLUGS if slug in apps]
+    if pocket_slugs:
+        p = POCKET_SHARED[lang]
+        pocket_cards = "".join(app_card(current, lang, apps[slug], slug) for slug in pocket_slugs)
+        pocket_section = f'''<section class="section" aria-labelledby="pocket-games-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["journey_label"])}</p><h2 id="pocket-games-title">{esc(p["discover_title"])}</h2></div><p>{esc(p["discover_copy"])}</p></div><div class="game-grid">{pocket_cards}</div></section>'''
+        privacy_links += "".join(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug, True)))}">{esc(public_name(apps[slug], lang))} · {esc(c["privacy"])}</a>' for slug in pocket_slugs)
     content = f'''<section class="hub-hero"><div class="hero-grid"><div><p class="eyebrow">{esc(c["hub_eyebrow"])}</p><h1>{esc(c["hub_title"])}</h1><p class="lede">{esc(c["hub_lede"])}</p><a class="button button-primary" href="#games">{esc(c["games"])}</a></div><div class="orbit-art" aria-label="{esc(c["orbit_alt"])}"><span class="orbit orbit-a"></span><span class="orbit orbit-b"></span><span class="float-shape shape-a">✦</span><span class="float-shape shape-b">⌁</span><span class="float-shape shape-c">◆</span><span class="float-shape shape-d">●</span></div></div></section>
 <section class="section" id="games" aria-labelledby="games-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["games"])}</p><h2 id="games-title">{esc(c["games_intro"])}</h2></div></div><div class="game-grid">{cards}</div></section>
 <section class="section soft-section" aria-labelledby="values-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["collection"])}</p><h2 id="values-title">{esc(c["collection_title"])}</h2></div><p>{esc(c["collection_copy"])}</p></div><div class="value-grid"><article><strong>100</strong><h3>{esc(c["curated"])}</h3><p>{esc(c["curated_copy"])}</p></article><article><strong>∞</strong><h3>{esc(c["endless"])}</h3><p>{esc(c["endless_copy"])}</p></article><article><strong>◷</strong><h3>{esc(c["calm"])}</h3><p>{esc(c["calm_copy"])}</p></article></div></section>
@@ -525,7 +572,7 @@ def build_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> None:
     store_cta = (f'<a class="button button-primary" href="{esc(app["store_url"])}">{esc(STORE_LABELS[lang])}</a>' if app["store_live"] and app["store_url"] else f'<p class="coming"><span aria-hidden="true">●</span>{esc(c["coming"])}</p>')
     other = "".join(app_card(current, lang, apps[other_slug], other_slug) for other_slug in SLUGS if other_slug != slug)
     hero_alt = f'{name}: {app["headlines"][lang][0]["headline"].replace(chr(10), " ")}'
-    content = f'''<section class="app-hero"><div class="app-hero-grid"><div class="app-hero-copy"><div class="app-title"><img src="{esc(rel_href(current, icon))}" width="88" height="88" alt="{esc(f'{name} app icon')}"><div><p class="eyebrow">{esc(app["brand"])}</p><h1>{esc(name)}</h1></div></div><p class="lede">{esc(intro)}</p>{store_cta}</div><div class="hero-shot-wrap"><div class="hero-ring" aria-hidden="true"></div><div class="hero-shot"><img src="{esc(rel_href(current, hero_image))}" width="720" height="1564" alt="{esc(hero_alt)}"></div></div></div></section>
+    content = f'''<section class="app-hero"><div class="app-hero-grid"><div class="app-hero-copy"><div class="app-title"><img src="{esc(rel_href(current, icon))}" width="88" height="88" alt="{esc(f'{name} app icon')}"><div><p class="eyebrow">{esc(public_name(app, lang))}</p><h1>{esc(name)}</h1></div></div><p class="lede">{esc(intro)}</p>{store_cta}</div><div class="hero-shot-wrap"><div class="hero-ring" aria-hidden="true"></div><div class="hero-shot"><img src="{esc(rel_href(current, hero_image))}" width="720" height="1564" alt="{esc(hero_alt)}"></div></div></div></section>
 <section class="section" aria-labelledby="idea-title"><div class="split"><div><p class="eyebrow">{esc(c["how"])}</p><h2 id="idea-title">{esc(body_one)}</h2><p class="body-copy">{esc(body_two)}</p></div><div class="feature-panel"><h3>{esc(section_title.title())}</h3><ul class="checklist">{bullet_html}</ul></div></div></section>
 <section class="section soft-section" aria-labelledby="collection-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["collection"])}</p><h2 id="collection-title">{esc(c["collection_title"])}</h2></div><p>{esc(c["collection_copy"])}</p></div><div class="value-grid"><article><strong>100</strong><h3>{esc(c["curated"])}</h3><p>{esc(c["curated_copy"])}</p></article><article><strong>∞</strong><h3>{esc(c["endless"])}</h3><p>{esc(c["endless_copy"])}</p></article><article><strong>↺</strong><h3>{esc(c["calm"])}</h3><p>{esc(c["calm_copy"])}</p></article></div></section>
 <section class="section shots-section" aria-labelledby="screens-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["screens"])}</p><h2 id="screens-title">{esc(c["screens"])}</h2></div><p>{esc(c["screens_intro"])}</p></div><div class="shots-grid">{screenshot_cards(current, lang, slug, app, c)}</div></section>
@@ -584,25 +631,39 @@ def metadata_description(description: str) -> str:
 def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> None:
     current = SITE / route_file(lang, slug)
     c = COMMON[lang]
-    p = POCKET_TEXT[lang]
+    p = pocket_text(app, lang)
     name = app["name"][lang]
     title = f'{name} · {app["subtitle"][lang]}'
     description = app["promo"][lang]
     icon = SITE / "assets" / "icons" / f"{slug}.png"
-    hero = image_path(slug, lang, app["screenshot_files"][0])
-    og = BASE + f"assets/screens/{lang}/{slug}/{app['screenshot_files'][0]}.jpg"
-    headline = app["headlines"][lang][0]["headline"].replace("\n", " ")
+    has_media = bool(app["screenshot_files"])
+    og = BASE + (f"assets/screens/{lang}/{slug}/{app['screenshot_files'][0]}.jpg" if has_media else f"assets/icons/{slug}.png")
+    hero_html = ""
+    gallery_html = ""
+    if has_media:
+        hero = image_path(slug, lang, app["screenshot_files"][0])
+        headline = app["headlines"][lang][0]["headline"].replace("\n", " ")
+        hero_html = f'<div class="hero-shot-wrap"><div class="hero-ring" aria-hidden="true"></div><div class="hero-shot"><img src="{esc(rel_href(current, hero))}" width="720" height="1564" alt="{esc(f"{name}: {headline}")}" fetchpriority="high"></div></div>'
+        gallery_html = f'<section class="section shots-section" aria-labelledby="screens-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["screens"])}</p><h2 id="screens-title">{esc(c["screens"])}</h2></div><p>{esc(p["screens_intro"])}</p></div><div class="shots-grid">{screenshot_cards(current, lang, slug, app, c)}</div></section>'
 
-    stats = "".join([
-        f'<article><strong>48</strong><h3>{esc(p["story_routes"])}</h3></article>',
-        f'<article><strong>8</strong><h3>{esc(p["regions"])}</h3></article>',
-        f'<article><strong>8</strong><h3>{esc(p["trials"])}</h3></article>',
-        f'<article><strong>2</strong><h3>{esc(p["depths"])}</h3></article>',
-    ])
-    free_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "Wakewater Gardens: the first six story crossings.", lang)
-    full_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "Unlock seven more regions, 42 more story crossings, all eight Tide Trials, and the complete story and ending.", lang)
-    move_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "D-pad moves Nim one tile per beat. Hold a direction to keep hopping. Reach the sun-tree at the far bank. There is no countdown or lives limit.", lang)
-    depth_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "A dives or rises. Root roofs block the top. Shallow shelves block the bottom. Find their openings and change layers BEFORE crossing. A arrows beside lanes show the open layer.", lang)
+    if app["brand"] == "Reedwake":
+        stats = "".join([
+            f'<article><strong>48</strong><h3>{esc(p["story_routes"])}</h3></article>',
+            f'<article><strong>8</strong><h3>{esc(p["regions"])}</h3></article>',
+            f'<article><strong>8</strong><h3>{esc(p["trials"])}</h3></article>',
+            f'<article><strong>2</strong><h3>{esc(p["depths"])}</h3></article>',
+        ])
+        free_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "Wakewater Gardens: the first six story crossings.", lang)
+        full_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "Unlock seven more regions, 42 more story crossings, all eight Tide Trials, and the complete story and ending.", lang)
+        move_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "D-pad moves Nim one tile per beat. Hold a direction to keep hopping. Reach the sun-tree at the far bank. There is no countdown or lives limit.", lang)
+        depth_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "A dives or rises. Root roofs block the top. Shallow shelves block the bottom. Find their openings and change layers BEFORE crossing. A arrows beside lanes show the open layer.", lang)
+        journey_copy = catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "X scouts both layers without losing time. START pauses. Settings offer gentle pace and quiet motion. The atlas has 48 story routes plus eight optional Tide Trials.", lang)
+    else:
+        product = app["website"][lang]
+        stats = ""
+        free_copy, full_copy = product["free"], product["full"]
+        move_copy, depth_copy = "", ""
+        journey_copy = product["journey"]
     restore_action = catalog_text("ios/PocketColor/Packages/PocketCommerce/Sources/PocketCommerce/Resources/PocketCommerce.xcstrings", "Restore purchases", lang)
     faq = [
         (p["controls_q"], f'{esc(p["controls_a"])}<p>{esc(move_copy)}</p><p>{esc(depth_copy)}</p>'),
@@ -612,14 +673,17 @@ def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> 
         (p["restore_q"], f'{esc(p["restore_a_prefix"])} <strong>{esc(restore_action)}</strong>.'),
         (p["pending_q"], esc(p["pending_a"])),
     ]
+    store_cta = f'<a class="button button-primary" href="{esc(app["store_url"])}">{esc(STORE_LABELS[lang])}</a>' if app["store_live"] and app["store_url"] else f'<p class="coming"><span aria-hidden="true">●</span>{esc(c["coming"])}</p>'
     faq_html = "".join(f'<details class="support-answer"><summary>{esc(question)}</summary><div>{answer}</div></details>' for question, answer in faq)
-    content = f'''<section class="app-hero"><div class="app-hero-grid"><div class="app-hero-copy"><div class="app-title"><img src="{esc(rel_href(current, icon))}" width="88" height="88" alt="{esc(f'{name} app icon')}"><div><p class="eyebrow">{esc(app["brand"])}</p><h1>{esc(name)}</h1></div></div><p class="lede">{esc(description)}</p><p class="coming"><span aria-hidden="true">●</span>{esc(c["coming"])}</p><p>{esc(p["free_replay"])}</p></div><div class="hero-shot-wrap"><div class="hero-ring" aria-hidden="true"></div><div class="hero-shot"><img src="{esc(rel_href(current, hero))}" width="720" height="1564" alt="{esc(f'{name}: {headline}')}" fetchpriority="high"></div></div></div></section>
-<section class="section" aria-labelledby="journey-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["journey_label"])}</p><h2 id="journey-title">{esc(p["journey_title"])}</h2></div><p>{esc(catalog_text("ios/PocketColor/Packages/Reedwake/Sources/ReedwakeKit/Resources/Reedwake.xcstrings", "X scouts both layers without losing time. START pauses. Settings offer gentle pace and quiet motion. The atlas has 48 story routes plus eight optional Tide Trials.", lang))}</p></div><div class="value-grid pocket-stats">{stats}</div></section>
+    content = f'''<section class="app-hero"><div class="app-hero-grid{' copy-only' if not has_media else ''}"><div class="app-hero-copy"><div class="app-title"><img src="{esc(rel_href(current, icon))}" width="88" height="88" alt="{esc(f'{name} app icon')}"><div><p class="eyebrow">{esc(public_name(app, lang))}</p><h1>{esc(name)}</h1></div></div><p class="lede">{esc(description)}</p>{store_cta}<p>{esc(p["free_replay"])}</p></div>{hero_html}</div></section>
+<section class="section" aria-labelledby="journey-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["journey_label"])}</p><h2 id="journey-title">{esc(p["journey_title"])}</h2></div><p>{esc(journey_copy)}</p></div><div class="value-grid pocket-stats">{stats}</div></section>
 <section class="section soft-section" aria-labelledby="free-title"><div class="pro-panel"><div><p class="eyebrow">{esc(p["free_title"])}</p><h2 id="free-title">{esc(free_copy)}</h2><p>{esc(p["free_replay"])}</p></div><div class="pro-card"><span>{esc(p["full_title"])}</span><p>{esc(full_copy)}</p><p>{esc(p["one_time"])}</p><p>{esc(p["price"])}</p></div></div></section>
-<section class="section" aria-labelledby="story-copy-title"><div class="section-heading"><div><p class="eyebrow">{esc(app["brand"])}</p><h2 id="story-copy-title">{esc(app["subtitle"][lang])}</h2></div></div><div class="store-copy">{metadata_description(app["description"][lang])}</div></section>
-<section class="section shots-section" aria-labelledby="screens-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["screens"])}</p><h2 id="screens-title">{esc(c["screens"])}</h2></div><p>{esc(p["screens_intro"])}</p></div><div class="shots-grid">{screenshot_cards(current, lang, slug, app, c)}</div></section>
+<section class="section" aria-labelledby="story-copy-title"><div class="section-heading"><div><p class="eyebrow">{esc(public_name(app, lang))}</p><h2 id="story-copy-title">{esc(app["subtitle"][lang])}</h2></div></div><div class="store-copy">{metadata_description(app["description"][lang])}</div></section>
+{gallery_html}
 <section class="section" id="support" aria-labelledby="support-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["faq_label"])}</p><h2 id="support-title">{esc(p["faq_title"])}</h2></div><p>{esc(p["support_intro"])}</p></div><div class="support-list">{faq_html}</div></section>'''
     jsonld = {"@context": "https://schema.org", "@type": "SoftwareApplication", "name": name, "applicationCategory": "VideoGame", "operatingSystem": "iOS", "description": description, "image": og, "url": public_route(lang, slug), "inLanguage": lang}
+    if app["store_live"] and app["store_url"]:
+        jsonld["downloadUrl"] = app["store_url"]
     current.parent.mkdir(parents=True, exist_ok=True)
     current.write_text(page_shell(current, lang, title, description, public_route(lang, slug), og, name, slug, False, content, jsonld, apps), encoding="utf-8")
 
@@ -627,7 +691,7 @@ def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> 
 def build_pocket_privacy(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> None:
     current = SITE / route_file(lang, slug, True)
     c = COMMON[lang]
-    p = POCKET_TEXT[lang]
+    p = pocket_text(app, lang)
     name = app["name"][lang]
     title = p["privacy_title"].format(name=name)
     description = p["privacy_intro"]
@@ -653,7 +717,7 @@ def require_sips() -> str:
     return sips
 
 
-def validate_sources(source_root: Path = ROOT) -> None:
+def validate_sources(source_root: Path = ROOT, require_all_media: bool = False) -> None:
     """Validate every input before creating a staging directory."""
     require_sips()
     required: list[Path] = []
@@ -670,6 +734,8 @@ def validate_sources(source_root: Path = ROOT) -> None:
             continue
         for kind in ("app-name", "subtitle", "promotional-text", "app-description"):
             required.extend(metadata / kind / f"{lang}.txt" for lang in LANGS)
+        if brand != "Reedwake":
+            required.extend(metadata / "website-content" / f"{lang}.json" for lang in LANGS)
         headline_files = [metadata / "screenshot-headlines" / f"{lang}.json" for lang in LANGS]
         required.extend(headline_files)
         for lang, headline_path in zip(LANGS, headline_files):
@@ -693,7 +759,8 @@ def validate_sources(source_root: Path = ROOT) -> None:
                 if field.is_file() and read_text(field) != url:
                     raise ValueError(f"{field} must match the website route {url!r}.")
         required.append(app_icon_source(source_root, {"brand": brand, "family": "pocketcolor"}))
-        required.extend(app_screenshot_source(source_root, {"brand": brand}, lang, filename) for lang in LANGS for filename in POCKET_SCREENSHOT_FILES)
+        if require_all_media or brand in APPROVED_POCKET_MEDIA:
+            required.extend(app_screenshot_source(source_root, {"brand": brand}, lang, filename) for lang in LANGS for filename in POCKET_SCREENSHOT_FILES)
     missing = [path for path in required if not path.is_file() or path.stat().st_size == 0]
     if missing:
         sample = "\n".join(f"  - {path}" for path in missing[:12])
@@ -740,7 +807,10 @@ def write_static_files(apps: dict[str, dict]) -> None:
 def main() -> None:
     global SITE
     deploy_site = SITE
-    validate_sources()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--require-all-media", action="store_true", help="Validate every game’s complete screenshot matrix before building; approval still controls public galleries.")
+    args = parser.parse_args()
+    validate_sources(require_all_media=args.require_all_media)
     apps = {**load_apps(), **load_pocket_games()}
     if not deploy_site.is_dir():
         raise RuntimeError(f"Expected existing deployment directory at {deploy_site}; refusing to replace an unexpected path.")
@@ -796,7 +866,7 @@ STYLES = r'''
 @media(max-width:850px){.nav-links{display:none}.nav-menu{display:block}.hero-grid,.app-hero-grid{grid-template-columns:1fr;gap:2rem;min-height:0}.hero-grid,.app-hero-grid{padding-top:5rem;padding-bottom:4rem}.orbit-art,.hero-shot-wrap{min-height:390px}.hero-shot{right:20%;width:min(52%,255px)}.section-heading,.split{grid-template-columns:1fr;gap:1rem}.game-grid{grid-template-columns:repeat(2,1fr)}.shots-grid{grid-template-columns:repeat(2,1fr)}.shot-card:nth-child(even){padding-top:1rem}.policy-layout{grid-template-columns:1fr;gap:1.5rem}.policy-nav{position:static}.privacy-links{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){h1{font-size:clamp(2.7rem,13vw,4.3rem)}h2{font-size:clamp(2rem,10vw,3rem)}.nav{min-height:70px}.hero-grid,.app-hero-grid{padding-top:4.2rem}.game-grid,.value-grid,.privacy-links,.shots-grid,.policy-summary{grid-template-columns:1fr}.orbit-art{min-height:325px}.shape-a{width:90px;height:90px;left:12%}.shape-b{width:110px;height:70px;right:5%}.shape-c{width:83px;height:83px;left:15%}.shape-d{right:15%;width:60px;height:60px}.app-title{align-items:flex-start;gap:.8rem}.app-title img{width:66px;height:66px;border-radius:19px}.app-title h1{font-size:clamp(2.35rem,10vw,3.6rem)}.hero-shot-wrap{min-height:340px}.hero-shot{right:19%;width:min(59%,230px)}.pro-panel{grid-template-columns:1fr}.footer-inner{grid-template-columns:1fr;gap:1.5rem}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-shot,.float-shape,.game-card,.shot-frame,.button{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none;transition:none}.game-card:hover,.shot-card:hover .shot-frame,.button:hover{transform:none}}
-.pocket-stats{grid-template-columns:repeat(4,1fr)}.store-copy{display:grid;gap:.65rem;max-width:850px}.store-copy p{margin:0;color:var(--muted);font-size:1.05rem}.support-list{display:grid;gap:.75rem;max-width:900px}.support-answer{padding:1.15rem 1.35rem;border:1px solid var(--line);border-radius:18px;background:#fff}.support-answer summary{cursor:pointer;color:var(--brand-ink);font-weight:850}.support-answer>div{padding-top:.85rem;color:var(--muted)}.support-answer p{margin:.7rem 0 0}.support-answer p:first-child{margin-top:0}
+.app-hero-grid.copy-only{grid-template-columns:minmax(0,900px);min-height:0}.pocket-stats{grid-template-columns:repeat(4,1fr)}.store-copy{display:grid;gap:.65rem;max-width:850px}.store-copy p{margin:0;color:var(--muted);font-size:1.05rem}.support-list{display:grid;gap:.75rem;max-width:900px}.support-answer{padding:1.15rem 1.35rem;border:1px solid var(--line);border-radius:18px;background:#fff}.support-answer summary{cursor:pointer;color:var(--brand-ink);font-weight:850}.support-answer>div{padding-top:.85rem;color:var(--muted)}.support-answer p{margin:.7rem 0 0}.support-answer p:first-child{margin-top:0}
 @media(max-width:850px){.pocket-stats{grid-template-columns:repeat(2,1fr)}}
 '''
 

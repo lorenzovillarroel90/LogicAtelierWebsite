@@ -11,7 +11,10 @@ editing it.
   LogicAtelier puzzle games and PocketColor games.
 - Puzzle screenshot sources are four iPhone captures at
   `../AppStoreScreenshots/<Brand>/v1.0/iPhone/<locale>/`. PocketColor game
-  pages use six captures; Reedwake's approved sequence is `01_core`,
+  pages use reviewed six-shot matrices; only games in `APPROVED_POCKET_MEDIA`
+  render a gallery. Complete product/help/privacy copy and icons may ship before
+  new media approval, with no placeholder or empty gallery promise. Reedwake's
+  approved sequence is `01_core`,
   `02_world`, `03_world`, `04_depth`, `05_solved`, `06_home`. The generator
   makes web-sized derivatives; it does not synthesize or replace storefront
   shots.
@@ -39,7 +42,8 @@ editing it.
   does not receive payment-card data. Never copy the ad disclosure to a game
   that does not ship advertising.
 - Localized app pages, support content, and privacy pages must use the approved
-  locale's copy and screenshot matrix. PocketColor terminology should follow
+  locale's copy. Enabled galleries must use the complete reviewed screenshot
+  matrix. PocketColor terminology should follow
   the game's reviewed `*.xcstrings` catalog. Do not silently machine-translate
   established product terminology.
 
@@ -56,6 +60,7 @@ visible on that page. Keep `robots.txt`, `sitemap.xml`, `404.html`, and
 
 ```sh
 python3 build.py
+python3 build.py --require-all-media # separate final matrix gate
 python3 -m http.server 4173 --directory site
 ```
 

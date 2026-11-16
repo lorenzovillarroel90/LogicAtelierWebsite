@@ -19,6 +19,8 @@ import tempfile
 import uuid
 from pathlib import Path
 
+import gem_bastion
+
 
 ROOT = Path(__file__).resolve().parents[1]
 WEBSITE = Path(__file__).resolve().parent
@@ -300,9 +302,12 @@ SUPPORT_TEXT = {
 }
 
 
-def public_support_contact(lang: str) -> str:
+def public_support_contact(lang: str, warning: str = "") -> str:
     text = SUPPORT_TEXT[lang]
-    return f'''<div class="support-contact"><h3>{esc(text["title"])}</h3><p>{esc(text["copy"])}</p><a class="button button-primary" href="{esc(PUBLIC_SUPPORT_URL)}" rel="noopener">{esc(text["action"])}</a><p>{esc(text["channel"])}</p></div>'''
+    action = f'<a class="button button-primary" href="{esc(PUBLIC_SUPPORT_URL)}" rel="noopener">{esc(text["action"])}</a>'
+    channel = f'<p>{esc(text["channel"] + " " + warning if warning else text["channel"])}</p>'
+    contact = channel + action if warning else action + channel
+    return f'<div class="support-contact"><h3>{esc(text["title"])}</h3><p>{esc(text["copy"])}</p>{contact}</div>'
 
 
 VIDEO_TEXT = {
@@ -334,7 +339,11 @@ def approved_videos(include_held: bool = False) -> dict[str, dict]:
 
 def public_name(app: dict, lang: str) -> str:
     """Use approved localized game names; routing identities stay internal."""
-    return app["name"][lang] if app.get("family") == "pocketcolor" else app["brand"]
+    return app["brand"] if app["family"] == "puzzle" else app["name"][lang]
+
+
+def has_game_support(app: dict) -> bool:
+    return app["family"] in ("pocketcolor", gem_bastion.FAMILY)
 
 
 def pocket_text(app: dict, lang: str) -> dict:
@@ -412,6 +421,8 @@ def load_pocket_games(source_root: Path = ROOT) -> dict[str, dict]:
 
 
 def app_icon_source(source_root: Path, app: dict) -> Path:
+    if app["family"] == gem_bastion.FAMILY:
+        return source_root / gem_bastion.ICON
     if app.get("family") == "pocketcolor":
         catalog = source_root / "ios" / "PocketColor" / "ios-projects" / app["brand"] / "App" / "Assets.xcassets" / "AppIcon.appiconset"
         images = json.loads(read_text(catalog / "Contents.json"))["images"]
@@ -495,7 +506,7 @@ def make_header(current: Path, lang: str, slug: str | None, privacy: bool, apps:
     nav_game = f'<a href="{esc(rel_href(current, SITE / game_home))}">{esc(c["all_games"] if not slug else public_name(apps[slug], lang))}</a>'
     nav_privacy = f'<a href="{esc(rel_href(current, SITE / privacy_target))}">{esc(c["privacy"])}</a>' if privacy_target else f'<a href="#privacy-pages">{esc(c["privacy"])}</a>'
     nav_support = ""
-    if slug and apps[slug].get("family") == "pocketcolor":
+    if slug and has_game_support(apps[slug]):
         support_href = rel_href(current, SITE / route_file(lang, slug)) + "#support"
         nav_support = f'<a href="{esc(support_href)}">{esc(POCKET_TEXT[lang]["support_nav"])}</a>'
     brand_image = ""
@@ -515,11 +526,15 @@ def make_header(current: Path, lang: str, slug: str | None, privacy: bool, apps:
 
 def make_footer(current: Path, lang: str, slug: str | None, apps: dict[str, dict]) -> str:
     c = COMMON[lang]
-    footer_note = pocket_text(apps[slug], lang)["footer"] if slug and apps[slug].get("family") == "pocketcolor" else c["footer_note"]
+    footer_note = c["footer_note"]
+    if slug and apps[slug]["family"] == "pocketcolor":
+        footer_note = pocket_text(apps[slug], lang)["footer"]
+    elif slug == gem_bastion.SLUG:
+        footer_note = gem_bastion.TEXT[lang]["footer"]
     links = [f'<a href="{esc(rel_href(current, SITE / route_file(lang))) }">{esc(c["all_games"])}</a>']
     if slug:
         links.append(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug, True)))}">{esc(c["privacy"])}</a>')
-        if apps[slug].get("family") == "pocketcolor":
+        if has_game_support(apps[slug]):
             links.append(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug)))}#support">{esc(POCKET_TEXT[lang]["support_nav"])}</a>')
     else:
         links.append(f'<a href="#privacy-pages">{esc(c["site_privacy"])}</a>')
@@ -542,7 +557,7 @@ def make_head(current: Path, lang: str, title: str, description: str, canonical:
 
 
 def page_shell(current: Path, lang: str, title: str, description: str, canonical: str, og_image: str, og_alt: str, slug: str | None, privacy: bool, content: str, jsonld: dict | None = None, apps: dict[str, dict] | None = None) -> str:
-    theme = THEMES.get(slug or "", {})
+    theme = gem_bastion.THEME if slug == gem_bastion.SLUG else THEMES.get(slug or "", {})
     style = "" if not theme else f' style="--accent:{theme["accent"]};--companion:{theme["companion"]};--wash:{theme["wash"]};--brand-ink:{theme["ink"]}"'
     c = COMMON[lang]
     page_apps = apps or load_apps()
@@ -559,8 +574,9 @@ def app_card(current: Path, lang: str, app: dict, slug: str) -> str:
     route = SITE / route_file(lang, slug)
     icon = SITE / "assets" / "icons" / f"{slug}.png"
     theme = app["theme"]
+    icon_alt = gem_bastion.TEXT[lang]["icon"] if slug == gem_bastion.SLUG else f'{app["name"][lang]} app icon'
     return f'''<article class="game-card" style="--accent:{theme["accent"]};--companion:{theme["companion"]};--wash:{theme["wash"]}">
-  <a class="game-card-link" href="{esc(rel_href(current, route))}"><img src="{esc(rel_href(current, icon))}" width="96" height="96" loading="lazy" alt="{esc(f'{app["name"][lang]} app icon')}"><span class="game-card-copy"><strong>{esc(public_name(app, lang))}</strong><span>{esc(app["subtitle"][lang])}</span><em>{esc(c["explore"])} <span aria-hidden="true">↗</span></em></span></a>
+  <a class="game-card-link" href="{esc(rel_href(current, route))}"><img src="{esc(rel_href(current, icon))}" width="96" height="96" loading="lazy" alt="{esc(icon_alt)}"><span class="game-card-copy"><strong>{esc(public_name(app, lang))}</strong><span>{esc(app["subtitle"][lang])}</span><em>{esc(c["explore"])} <span aria-hidden="true">↗</span></em></span></a>
 </article>'''
 
 
@@ -579,10 +595,13 @@ def build_hub(lang: str, apps: dict[str, dict]) -> None:
         pocket_cards = "".join(app_card(current, lang, apps[slug], slug) for slug in pocket_slugs)
         pocket_section = f'''<section class="section" aria-labelledby="pocket-games-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["journey_label"])}</p><h2 id="pocket-games-title">{esc(p["discover_title"])}</h2></div><p>{esc(p["discover_copy"])}</p></div><div class="game-grid">{pocket_cards}</div></section>'''
         privacy_links += "".join(f'<a href="{esc(rel_href(current, SITE / route_file(lang, slug, True)))}">{esc(public_name(apps[slug], lang))} · {esc(c["privacy"])}</a>' for slug in pocket_slugs)
+    gem_slug = gem_bastion.SLUG
+    gem_section = gem_bastion.discover_section(lang, app_card(current, lang, apps[gem_slug], gem_slug))
     content = f'''<section class="hub-hero"><div class="hero-grid"><div><p class="eyebrow">{esc(c["hub_eyebrow"])}</p><h1>{esc(c["hub_title"])}</h1><p class="lede">{esc(c["hub_lede"])}</p><a class="button button-primary" href="#games">{esc(c["games"])}</a></div><div class="orbit-art" aria-label="{esc(c["orbit_alt"])}"><span class="orbit orbit-a"></span><span class="orbit orbit-b"></span><span class="float-shape shape-a">✦</span><span class="float-shape shape-b">⌁</span><span class="float-shape shape-c">◆</span><span class="float-shape shape-d">●</span></div></div></section>
 <section class="section" id="games" aria-labelledby="games-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["games"])}</p><h2 id="games-title">{esc(c["games_intro"])}</h2></div></div><div class="game-grid">{cards}</div></section>
 <section class="section soft-section" aria-labelledby="values-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["collection"])}</p><h2 id="values-title">{esc(c["collection_title"])}</h2></div><p>{esc(c["collection_copy"])}</p></div><div class="value-grid"><article><strong>100</strong><h3>{esc(c["curated"])}</h3><p>{esc(c["curated_copy"])}</p></article><article><strong>∞</strong><h3>{esc(c["endless"])}</h3><p>{esc(c["endless_copy"])}</p></article><article><strong>◷</strong><h3>{esc(c["calm"])}</h3><p>{esc(c["calm_copy"])}</p></article></div></section>
 {pocket_section}
+{gem_section}
 <section class="section compact-section" id="privacy-pages" aria-labelledby="privacy-discover-title"><div class="section-heading"><div><p class="eyebrow">{esc(c["privacy"])}</p><h2 id="privacy-discover-title">{esc(c["site_privacy_title"])}</h2></div><p>{esc(c["site_privacy_desc"])}</p></div><div class="privacy-links">{privacy_links}</div></section>'''
     jsonld = {"@context": "https://schema.org", "@type": "WebSite", "name": c["collection"], "url": public_route(lang), "description": description, "inLanguage": lang}
     (SITE / route_file(lang)).parent.mkdir(parents=True, exist_ok=True)
@@ -616,7 +635,7 @@ def build_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> None:
     title = f"{name} · {app['subtitle'][lang]}"
     description = app["promo"][lang]
     bullet_html = "".join(f"<li>{esc(item)}</li>" for item in bullets)
-    store_cta = (f'<a class="button button-primary" href="{esc(app["store_url"])}">{esc(STORE_LABELS[lang])}</a>' if app["store_live"] and app["store_url"] else f'<p class="coming"><span aria-hidden="true">●</span>{esc(c["coming"])}</p>')
+    store_cta = store_action(lang, app)
     other = "".join(app_card(current, lang, apps[other_slug], other_slug) for other_slug in SLUGS if other_slug != slug)
     hero_alt = f'{name}: {app["headlines"][lang][0]["headline"].replace(chr(10), " ")}'
     content = f'''<section class="app-hero"><div class="app-hero-grid"><div class="app-hero-copy"><div class="app-title"><img src="{esc(rel_href(current, icon))}" width="88" height="88" alt="{esc(f'{name} app icon')}"><div><p class="eyebrow">{esc(public_name(app, lang))}</p><h1>{esc(name)}</h1></div></div><p class="lede">{esc(intro)}</p>{store_cta}</div><div class="hero-shot-wrap"><div class="hero-ring" aria-hidden="true"></div><div class="hero-shot"><img src="{esc(rel_href(current, hero_image))}" width="720" height="1564" alt="{esc(hero_alt)}"></div></div></div></section>
@@ -686,6 +705,40 @@ def gameplay_video(current: Path, lang: str, slug: str, app: dict) -> str:
     return f'''<section class="section gameplay-section" aria-labelledby="gameplay-title"><div class="section-heading"><h2 id="gameplay-title">{esc(v["title"])}</h2><p id="gameplay-description">{esc(v["copy"])}</p></div><video class="gameplay-video" controls playsinline preload="metadata" poster="{poster}" width="886" height="1920" aria-label="{label}" aria-describedby="gameplay-description"><source src="{movie}" type="video/mp4"><a href="{movie}">{esc(v["fallback"])}</a></video></section>'''
 
 
+def store_action(lang: str, app: dict) -> str:
+    if app.get("store_live") and app.get("store_url"):
+        return f'<a class="button button-primary" href="{esc(app["store_url"])}">{esc(STORE_LABELS[lang])}</a>'
+    return f'<p class="coming"><span aria-hidden="true">●</span>{esc(COMMON[lang]["coming"])}</p>'
+
+
+def build_gem_page(lang: str, app: dict, apps: dict[str, dict], privacy: bool = False) -> None:
+    slug = gem_bastion.SLUG
+    current = SITE / route_file(lang, slug, privacy)
+    labels = gem_bastion.TEXT[lang]
+    support_label = POCKET_TEXT[lang]["support_nav"]
+    icon_asset = f"assets/icons/{slug}.png"
+    og_image = BASE + icon_asset
+    canonical = public_route(lang, slug, privacy)
+    if privacy:
+        support_href = rel_href(current, SITE / route_file(lang, slug)) + "#support"
+        support_link = f'<a href="{esc(support_href)}">{esc(SUPPORT_TEXT[lang]["title"])}</a>'
+        page = gem_bastion.privacy_page(app, lang, COMMON[lang], support_label, support_link)
+    else:
+        markup = {
+            "icon_href": rel_href(current, SITE / icon_asset),
+            "store_action": store_action(lang, app),
+            "description": metadata_description(app["description"][lang]),
+            "contact": public_support_contact(lang, labels["warning"]),
+        }
+        page = gem_bastion.product_page(app, lang, canonical, og_image, markup, support_label)
+    current.parent.mkdir(parents=True, exist_ok=True)
+    html = page_shell(
+        current, lang, canonical=canonical, og_image=og_image, og_alt=labels["icon"],
+        slug=slug, privacy=privacy, apps=apps, **page,
+    )
+    current.write_text(html, encoding="utf-8")
+
+
 def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> None:
     current = SITE / route_file(lang, slug)
     c = COMMON[lang]
@@ -733,7 +786,7 @@ def build_pocket_app(lang: str, slug: str, app: dict, apps: dict[str, dict]) -> 
         (p["restore_q"], f'{esc(p["restore_a_prefix"])} <strong>{esc(restore_action)}</strong>.'),
         (p["pending_q"], esc(p["pending_a"])),
     ]
-    store_cta = f'<a class="button button-primary" href="{esc(app["store_url"])}">{esc(STORE_LABELS[lang])}</a>' if app["store_live"] and app["store_url"] else f'<p class="coming"><span aria-hidden="true">●</span>{esc(c["coming"])}</p>'
+    store_cta = store_action(lang, app)
     faq_html = "".join(f'<details class="support-answer"><summary>{esc(question)}</summary><div>{answer}</div></details>' for question, answer in faq)
     content = f'''<section class="app-hero"><div class="app-hero-grid{' copy-only' if not has_media else ''}"><div class="app-hero-copy"><div class="app-title"><img src="{esc(rel_href(current, icon))}" width="88" height="88" alt="{esc(f'{name} app icon')}"><div><p class="eyebrow">{esc(public_name(app, lang))}</p><h1>{esc(name)}</h1></div></div><p class="lede">{esc(description)}</p>{store_cta}<p>{esc(p["free_replay"])}</p></div>{hero_html}</div></section>
 <section class="section" aria-labelledby="journey-title"><div class="section-heading"><div><p class="eyebrow">{esc(p["journey_label"])}</p><h2 id="journey-title">{esc(p["journey_title"])}</h2></div><p>{esc(journey_copy)}</p></div><div class="value-grid pocket-stats">{stats}</div></section>
@@ -782,6 +835,7 @@ def validate_sources(source_root: Path = ROOT, require_all_media: bool = False) 
     """Validate every input before creating a staging directory."""
     require_sips()
     required: list[Path] = []
+    required.append(source_root / gem_bastion.ICON)
     for brand in BRANDS:
         metadata = source_root / "AppStoreMetaData" / brand / "v1.0"
         for kind in ("app-name", "subtitle", "promotional-text", "app-description"):
@@ -988,10 +1042,11 @@ def write_static_files(apps: dict[str, dict]) -> None:
 
 
 def main() -> None:
-    global SITE
+    global ROOT, SITE
     deploy_site = SITE
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--require-all-media", action="store_true", help="Validate every game’s complete screenshot matrix before building; approval still controls public galleries.")
+    parser.add_argument("--source-root", type=Path, default=ROOT, help="Parent repository containing approved app assets and storefront metadata.")
+    parser.add_argument("--require-all-media", action="store_true", help="Validate the puzzle and PocketColor screenshot matrices and require their gallery approvals.")
     parser.add_argument("--import-approved-videos", action="store_true", help="Explicitly import hash-pinned external deliveries into durable Website-owned web media; does not publish or build pages.")
     parser.add_argument("--video-source-root", type=Path, help="External directory containing the hash-pinned approved movie/report paths.")
     parser.add_argument("--ffmpeg", default=shutil.which("ffmpeg"), help="Existing FFmpeg executable for stream-copy web derivatives and posters.")
@@ -1000,9 +1055,10 @@ def main() -> None:
         import_approved_videos(args.video_source_root, args.ffmpeg)
         print("Imported approved durable Website video sources; site/ was not changed.")
         return
-    validate_sources(require_all_media=args.require_all_media)
+    ROOT = args.source_root.resolve()
+    validate_sources(ROOT, require_all_media=args.require_all_media)
     videos = validate_owned_videos()
-    apps = {**load_apps(), **load_pocket_games()}
+    apps = {**load_apps(), **load_pocket_games(ROOT), gem_bastion.SLUG: gem_bastion.load_game(ROOT, LANGS, public_route, read_text)}
     if not deploy_site.is_dir():
         raise RuntimeError(f"Expected existing deployment directory at {deploy_site}; refusing to replace an unexpected path.")
 
@@ -1011,7 +1067,7 @@ def main() -> None:
     try:
         copy_assets(apps)
         copy_video_assets(videos)
-        (SITE / "styles.css").write_text(STYLES, encoding="utf-8")
+        (SITE / "styles.css").write_text(STYLES + gem_bastion.STYLES, encoding="utf-8")
         (SITE / "script.js").write_text(SCRIPT, encoding="utf-8")
         for lang in LANGS:
             build_hub(lang, apps)
@@ -1019,6 +1075,9 @@ def main() -> None:
                 if app["family"] == "pocketcolor":
                     build_pocket_app(lang, slug, app, apps)
                     build_pocket_privacy(lang, slug, app, apps)
+                elif app["family"] == gem_bastion.FAMILY:
+                    build_gem_page(lang, app, apps)
+                    build_gem_page(lang, app, apps, privacy=True)
                 else:
                     build_app(lang, slug, app, apps)
                     build_privacy(lang, slug, app, apps)

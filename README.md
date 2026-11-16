@@ -1,7 +1,7 @@
 # Puzzle worlds website
 
 Static marketing, support and privacy pages for the ten LogicAtelier puzzle
-games and all seven PocketColor adventures: Reedwake, Afterlight Run, Mothline, Brassbird, Hushshore, Gustglass and Spindlewatch.
+games, the seven PocketColor adventures, and the standalone Gem Bastion TD.
 
 ## Deployment
 
@@ -37,15 +37,21 @@ python3 Website/build.py
 
 The generator reads approved App Store metadata, four localized iPhone
 screenshots for each puzzle app, approved six-shot PocketColor matrices, and the
-matching app icons. Product/help/privacy routes can be published before new game
+matching app icons. Gem Bastion TD uses the metadata in
+`AppStoreMetaData/GemBastionTD/v1.0/`, including `website-content/<locale>.json`,
+and the app icon from `ios/GemBastionTD`. In a separate Website checkout, pass
+`--source-root /absolute/path/to/parent-repository` to the same generator.
+
+Product/help/privacy routes can be published before new game
 media is approved: these pages show their real icon and approved localized copy,
 without an empty gallery, screenshot promise or placeholder. `APPROVED_POCKET_MEDIA`
 is the explicit reviewed-matrix owner; all seven PocketColor games have complete,
 lead-approved six-shot matrices in all five languages. Add a
 game there after lead approval of all six shots in all five languages. Missing or
 empty approved sources still fail before replacing `site/`. Run
-`python3 Website/build.py --require-all-media` for the separate final all-game media
-gate; this stricter check does not itself approve a gallery. Reedwake's screenshot order is `01_core`, `02_world`, `03_world`,
+`python3 Website/build.py --require-all-media` for the puzzle and PocketColor
+screenshot matrix gate. This check does not itself approve a gallery.
+Reedwake's screenshot order is `01_core`, `02_world`, `03_world`,
 `04_depth`, `05_solved`, `06_home`. It creates web-sized JPEG and 512px PNG
 derivatives without modifying source assets. The generated `site/` output
 remains committed so GitHub Pages does not need a build step.
@@ -70,6 +76,10 @@ remains committed so GitHub Pages does not need a build step.
   verified. The generator emits the CTA and JSON-LD `downloadUrl` only when
   both the live switch and verified URL are present.
 - Game-specific control, free/full-content and save text for the six additional games lives beside their listing in `website-content/<locale>.json`. The generator shares support/privacy layout and common verified StoreKit facts, while Reedwake retains its approved terms. Afterlight Run discloses local records/settings and no saved mid-run campaign.
+- Gem Bastion TD’s marketing page, its `#support` anchor and its adjacent
+  `privacy.html` must match the corresponding storefront URLs in all five
+  languages. The full game is free. Its three optional repeatable tips use
+  Apple StoreKit.
 - Privacy wording must remain conservative and factual for each app family.
   LogicAtelier puzzle games disclose their ad and Pro services. Reedwake has
   local progress/settings, no ads/accounts/analytics, and StoreKit for the
@@ -131,8 +141,9 @@ same owner and concrete lead review, followed by the authorized deployment workf
 ## Shared public support
 
 [SUPPORT.md](SUPPORT.md) records the owner’s standing Reedwake contact choice for
-all seven PocketColor games. The existing public repository issue-reporting link
-is exposed on every localized game support and privacy page. Never ask the owner
+all seven PocketColor games and its reuse for Gem Bastion TD. The existing public
+repository issue-reporting link is accessible from the localized support and
+privacy pages for those games. Never ask the owner
 for that default again, invent an email or publish private App Review contacts.
 
 `approved-videos.json` can explicitly set `publicationEnabled: false` for a lead

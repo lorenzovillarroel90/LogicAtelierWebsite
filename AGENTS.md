@@ -20,13 +20,15 @@ editing it.
   shots.
 - LogicAtelier icons come from their project asset catalogs. PocketColor icons
   come from `../ios/PocketColor/ios-projects/<Brand>/App/Assets.xcassets/`.
+- Gem Bastion TD uses its app icon from `../ios/GemBastionTD/`. Its listing and
+  localized support and privacy copy live in `../AppStoreMetaData/GemBastionTD/v1.0/`.
 - Approved English videos use the hash-pinned `approved-videos.json` owner and
   durable `media/` sources. Read [the import/policy workflow](README.md#approved-english-gameplay-media).
   Original deliveries/traces remain external; only approved web movie/poster
   derivatives and safe provenance are allowed as Website product artifacts.
   Normal builds never depend on temporary delivery files or FFmpeg.
 - Public support/contact: read [the standing shared contact owner](SUPPORT.md);
-  every PocketColor game reuses Reedwake’s approved public channel by default.
+  PocketColor and Gem Bastion TD reuse Reedwake’s approved public channel.
 - Run `python3 build.py` to regenerate deployable output after source changes.
 
 ## Public content
@@ -48,6 +50,9 @@ editing it.
   StoreKit only for an approved one-time entitlement. In both families the app
   does not receive payment-card data. Never copy the ad disclosure to a game
   that does not ship advertising.
+- Gem Bastion TD keeps saves and settings on device, has no ads, accounts or
+  analytics, and uses StoreKit only for three optional, repeatable developer
+  tips. The full game is free and tips confer no rewards or access.
 - Localized app pages, support content, and privacy pages must use the approved
   locale's copy. Enabled galleries must use the complete reviewed screenshot
   matrix. PocketColor terminology should follow
@@ -67,7 +72,7 @@ visible on that page. Keep `robots.txt`, `sitemap.xml`, `404.html`, and
 
 ```sh
 python3 build.py
-python3 build.py --require-all-media # separate final matrix gate
+python3 build.py --require-all-media # puzzle and PocketColor matrix gate
 python3 -m http.server 4173 --directory site
 ```
 

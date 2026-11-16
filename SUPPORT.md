@@ -1,4 +1,4 @@
-# PocketColor public support
+# Game public support
 
 ## Standing owner decision
 
@@ -14,13 +14,16 @@ email address or publish private App Review contacts or `.env` values.
 - Direct public contact: https://github.com/lorenzovillarroel90/LogicAtelierWebsite/issues/new
 - Public reports: https://github.com/lorenzovillarroel90/LogicAtelierWebsite/issues
 - Code owner: `PUBLIC_SUPPORT_URL` and the five-language `SUPPORT_TEXT` in
-  [build.py](build.py). Every game’s localized product/help and privacy page uses
-  the same contact component. Game-specific FAQs and existing App Store Connect
-  support URLs remain local to each game; their contact destination is shared.
+  [build.py](build.py). Game-specific FAQs and App Store Connect support URLs
+  stay local to each game. Their public contact destination is shared.
 
-Reports are public and require a GitHub account. The website explains this before
-the link. No report is created automatically and no app data is transmitted by
-rendering the link. Playing the games still requires no account.
+Gem Bastion TD uses this same contact on its [support page](https://lorenzovillarroel90.github.io/LogicAtelierWebsite/gembastiontd/#support).
+Its privacy page explains voluntary reports and links back to its support page.
+
+Reports are public and require a GitHub account. The Gem Bastion TD contact
+explains this before the link and asks players to leave out personal and payment
+details. Players submit their own reports in GitHub. Playing the games requires no
+account.
 
 ## Verified provenance — 2026-10-12
 
